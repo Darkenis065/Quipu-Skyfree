@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, HDBSCAN
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 import os # Para la ruta del archivo
@@ -109,27 +109,48 @@ class AnalisisDatos:
 
     def aplicar_clustering(self):
         """
-        Aplica el algoritmo K-Means a las variables seleccionadas.
+        Aplica el algoritmo de clustering seleccionado (K-Means o HDBSCAN) a las variables seleccionadas.
         """
         if self.X_scaled is not None:
-            try:
-                n_clusters = int(input("Ingrese el número de clusters (k) a aplicar (e.g., 3): "))
-                if n_clusters <= 1:
-                     print("El número de clusters debe ser mayor a 1.")
-                     return False
+            print("\nSeleccione el algoritmo de clustering:")
+            print("1. K-Means")
+            print("2. HDBSCAN")
+            opcion = input("Seleccione una opción: ")
 
-                # Aplicar K-Means
-                kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-                self.labels = kmeans.fit_predict(self.X_scaled)
-                self.centroides = kmeans.cluster_centers_ # Guardar centroides (escalados)
+            if opcion == "1":
+                try:
+                    n_clusters = int(input("Ingrese el número de clusters (k) a aplicar (e.g., 3): "))
+                    if n_clusters <= 1:
+                         print("El número de clusters debe ser mayor a 1.")
+                         return False
 
-                print(f"Clustering K-Means aplicado con {n_clusters} clusters.")
-                return True
-            except ValueError:
-                print("Entrada no válida. Debe ingresar un número entero para k.")
-                return False
-            except Exception as e:
-                print(f"ERROR al aplicar K-Means: {e}")
+                    # Aplicar K-Means
+                    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+                    self.labels = kmeans.fit_predict(self.X_scaled)
+                    self.centroides = kmeans.cluster_centers_ # Guardar centroides (escalados)
+
+                    print(f"Clustering K-Means aplicado con {n_clusters} clusters.")
+                    return True
+                except ValueError:
+                    print("Entrada no válida. Debe ingresar un número entero para k.")
+                    return False
+                except Exception as e:
+                    print(f"ERROR al aplicar K-Means: {e}")
+                    return False
+
+            elif opcion == "2":
+                try:
+                    # Aplicar HDBSCAN
+                    hdbscan_clusterer = HDBSCAN(min_cluster_size=5, gen_min_span_tree=True)
+                    self.labels = hdbscan_clusterer.fit_predict(self.X_scaled)
+
+                    print(f"Clustering HDBSCAN aplicado.")
+                    return True
+                except Exception as e:
+                    print(f"ERROR al aplicar HDBSCAN: {e}")
+                    return False
+            else:
+                print("Opción no válida.")
                 return False
         else:
             print("ERROR: Primero debe seleccionar y escalar las columnas.")
@@ -168,8 +189,9 @@ class AnalisisDatos:
             plt.ylabel(col_y)
             plt.colorbar(scatter, label='Cluster ID')
             plt.grid(True)
+            plt.savefig('cluster_plot.png')
             plt.show()
-            print("Gráfica generada exitosamente.")
+            print("Gráfica generada y guardada como 'cluster_plot.png'.")
 
         else:
             print("ERROR: Primero debe cargar datos, seleccionar columnas y aplicar clustering.")
@@ -186,7 +208,7 @@ class AnalisisDatos:
         while True:
             print("\n--- Menú Análisis de Datos y Clustering ---")
             print("1. Seleccionar columnas (Y y X)")
-            print("2. Aplicar K-Means Clustering")
+            print("2. Aplicar Clustering (K-Means o HDBSCAN)")
             print("3. Generar Gráfica de Clusters")
             print("0. Salir")
 
