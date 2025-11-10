@@ -9,13 +9,47 @@ import pandas as pd
 
 
 class BaseDatos:
+    """Clase para gestionar consultas y almacenamiento de datos astronómicos
+    desde diferentes fuentes (SDSS, DESI, NASA ESI, NEO).
+
+    Esta clase permite realizar consultas a distintas bases de datos 
+    astronómicas y guardar los resultados localmente en formato CSV.
+    """
+
     def __init__(self, limite=10000):
+        """Inicializa la clase con un límite máximo de resultados por consulta.
+
+        Args:
+            limite (int, optional): Número máximo de resultados que puede devolver una consulta. 
+                Por defecto es 10000.
+        """
         self.limite = limite
 
-    def conectar(self, ra=None, dec=None, z_max=None, z_min=None, tipo=None , source = None):
-        
+    def conectar(self, ra=None, dec=None, z_max=None, z_min=None, tipo=None, source=None):
+        """Conecta y consulta diferentes bases de datos astronómicas según la fuente indicada.
 
-        # Valores por defecto si no se dan
+        Args:
+            ra (float, optional): Ascensión recta central de la búsqueda (en grados). 
+                Por defecto 180.0 si no se especifica.
+            dec (float, optional): Declinación central de la búsqueda (en grados). 
+                Por defecto 0.0 si no se especifica.
+            z_max (float, optional): Límite superior del rango de corrimiento al rojo. 
+                Por defecto 0.3.
+            z_min (float, optional): Límite inferior del rango de corrimiento al rojo. 
+                Por defecto 0.05.
+            tipo (str, optional): Tipo de objeto a buscar (reservado para futuras implementaciones).
+            source (str): Fuente de datos a consultar. Puede ser una de las siguientes:
+                - "SDSS"
+                - "DESI"
+                - "NASA ESI"
+                - "NEO"
+
+        Returns:
+            object | None: 
+                - Un objeto de tipo `astropy.table.Table` o `pandas.DataFrame` con los resultados.
+                - `None` si la fuente no está soportada o la consulta falla.
+        """
+        # Valores por defecto
         ra = 180.0 if ra is None else float(ra)
         dec = 0.0 if dec is None else float(dec)
         z_max = 0.3 if z_max is None else float(z_max)
@@ -36,8 +70,8 @@ class BaseDatos:
             print("\nEjecutando consulta a SDSS...")
             result = SDSS.query_sql(query)
             print("Consulta completada.")
-
             return result
+
         elif source.upper() == "DESI":
             radius = float(input("Ingresa el radio de búsqueda (en grados): "))
             query = f"""
@@ -48,39 +82,28 @@ class BaseDatos:
                 AND dec BETWEEN {dec - radius} AND {dec + radius}
                 """
             result = qc.query(sql=query, fmt='pandas')
-
             print(result)
             return result
+
         elif source.upper() == "NASA ESI":
             result = NasaExoplanetArchive.query_criteria(
-            table="pscomppars",
-            select="pl_name,hostname,disc_year,pl_orbper,pl_rade,pl_bmasse, pl_tranmid ,st_teff",
-            where="disc_year > 2015 AND pl_rade IS NOT NULL",
-            order="disc_year DESC"
+                table="pscomppars",
+                select="pl_name,hostname,disc_year,pl_orbper,pl_rade,pl_bmasse, pl_tranmid ,st_teff",
+                where="disc_year > 2015 AND pl_rade IS NOT NULL",
+                order="disc_year DESC"
             )
             return result
+
         elif source.upper() == "NEO":
             # Lista manual de cuerpos menores (id: nombre)
-            # Puedes ampliar la lista con los objetos que prefieras.
             cuerpos = {
-                "1": "Ceres",
-                "2": "Pallas",
-                "4": "Vesta",
-                "433": "Eros",
-                "1862": "Apollo",
-                "4179": "Toutatis",
-                "3200": "Phaethon",
-                "1620": "Geographos",
-                "25143": "Itokawa",
-                "101955": "Bennu",
-                "99942": "Apophis",
-                "162173": "Ryugu",
-                "253": "Mathilde",
-                "65803": "Didymos",
-                "99907": "2013 VY4"  # ejemplo genérico
+                "1": "Ceres", "2": "Pallas", "4": "Vesta", "433": "Eros", "1862": "Apollo",
+                "4179": "Toutatis", "3200": "Phaethon", "1620": "Geographos", "25143": "Itokawa",
+                "101955": "Bennu", "99942": "Apophis", "162173": "Ryugu", "253": "Mathilde",
+                "65803": "Didymos", "99907": "2013 VY4"
             }
 
-            # Mostrar una vista corta (primeras N entradas) para no saturar la terminal
+            # Muestra parcial
             N = 8
             print("== Lista breve de cuerpos menores (muestra) ==")
             short = list(cuerpos.items())[:N]
@@ -96,19 +119,16 @@ class BaseDatos:
                     return None
 
                 if o.lower() in ("done", "list"):
-                    # Mostrar toda la lista
                     df_all = pd.DataFrame(list(cuerpos.items()), columns=["id", "name"])
                     print("\n== Lista completa de cuerpos menores disponibles ==")
                     print(df_all.to_string(index=False))
                     continue
 
-                # Normalizar entrada: si el usuario ingresó un número que está en la lista usarlo
                 key = None
                 if o.isdigit() and o in cuerpos:
                     key = o
                     target = cuerpos[key]
                 else:
-                    # buscar por nombre (coincidencia parcial, case-insensitive)
                     matches = [(k, n) for k, n in cuerpos.items() if o.lower() in n.lower()]
                     if len(matches) == 1:
                         key, target = matches[0]
@@ -119,28 +139,24 @@ class BaseDatos:
                         print("Escribe el id exacto o nombre más específico.")
                         continue
                     else:
-                        # No hay coincidencias en la lista manual: intentar usar directamente la entrada como id/nombre
                         key = None
-                        target = o  # probar con Horizons directamente
+                        target = o
 
-                # Intentar consulta en JPL Horizons
                 try:
                     print(f"\nConsultando '{target}' en JPL Horizons...")
                     obj = Horizons(id=target, id_type='smallbody', location='@sun',
-                                epochs={'start':'2025-01-01', 'stop':'2025-01-10', 'step':'1d'})
+                                   epochs={'start':'2025-01-01', 'stop':'2025-01-10', 'step':'1d'})
                     result = obj.elements()
                     eph = obj.ephemerides()
 
                     print("\n=== Elementos orbitales ===")
-                    # Algunas columnas pueden no existir para ciertos objetos; comprobamos antes de mostrar
                     cols_elem = [c for c in ['targetname', 'a', 'e', 'incl', 'Omega', 'w', 'M'] if c in result.colnames]
                     print(result[cols_elem])
 
                     print("\n=== Efemérides (primeras filas) ===")
                     cols_eph = [c for c in ['datetime_str', 'RA', 'DEC', 'delta', 'r', 'V'] if c in eph.colnames]
-                    print(eph[cols_eph][:10])  # mostramos hasta 10 filas
+                    print(eph[cols_eph][:10])
 
-                    # Si quieres retornar ambos objetos para uso posterior:
                     return result
 
                 except Exception as exc:
@@ -148,41 +164,48 @@ class BaseDatos:
                     print("Prueba con otro id/nombre o escribe 'list' para ver la lista disponible.")
                     continue
 
-
         else:
             print("Fuente no soportada por el momento.")
             return None
-        
-   
-    def guardardatos(self, result,source):
+
+    def guardardatos(self, result, source):
+        """Guarda los resultados de la consulta en un archivo CSV dentro de la carpeta 'data'.
+
+        Args:
+            result (object): Resultado obtenido de la consulta (tabla o DataFrame).
+            source (str): Fuente de la cual provienen los datos (usada para nombrar el archivo).
+
+        Returns:
+            None
+        """
         os.makedirs("data", exist_ok=True)
 
         if result is not None:
-            print(result[:5])  # muestra las primeras 5 filas
+            print(result[:5])
             print("Guardando consulta")
             fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             nombre_archivo = os.path.join("data", f"{source}_{fecha}.csv")
             with open(nombre_archivo, "w", newline="") as archivo:
                 writer = csv.writer(archivo)
-                writer.writerow(result.columns)  # Encabezados
-                writer.writerows(result)          # Filas de datos
-
+                writer.writerow(result.columns)
+                writer.writerows(result)
             print(f"Archivo '{source}_{fecha}.csv' creado con éxito.")
-
-
         else:
             print("No se obtuvieron resultados.")
-        
 
 
-
-# --- PRUEBA ---
 if __name__ == "__main__":
+    """Bloque principal de ejecución.
+
+    Permite realizar una prueba manual del módulo solicitando al usuario 
+    los parámetros de búsqueda y guardando los resultados obtenidos.
+    """
     bd = BaseDatos(limite=1000)
     a = input("Seleccione la fuente de sus datos (SDSS, DESI, NASA ESI, NEO ): ")
-    ra =float(input("Ingresa Ra deg"))
-    dec =float(input("Ingresa Dec deg"))
-    z_min =float(input("Ingresa z-min"))
-    z_max =float(input("Ingresa z-max"))
-    resultado = bd.conectar(ra=ra, dec=dec, z_min=z_min, z_max=z_max, source = a)
-    archivos = bd.guardardatos(resultado,source = a)
+    ra = float(input("Ingresa Ra (en grados): "))
+    dec = float(input("Ingresa Dec (en grados): "))
+    z_min = float(input("Ingresa z-min: "))
+    z_max = float(input("Ingresa z-max: "))
+
+    resultado = bd.conectar(ra=ra, dec=dec, z_min=z_min, z_max=z_max, source=a)
+    bd.guardardatos(resultado, source=a)
