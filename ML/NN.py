@@ -8,15 +8,19 @@ from tensorflow.keras import layers
 from tensorflow.keras.callbacks import ModelCheckpoint
 import os
 import time
+import sys
+
+# Agregar el directorio padre al path para importar Rutina
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from Routines.rutinas import Rutina
 
 class AnalisisRegresionNN:
     """
     Clase para manejar la carga de datos, aplicar Regresión con Red Neuronal (TensorFlow/Keras)
     y visualizar el ajuste, permitiendo la configuración de hiperparámetros.
     """
-    def __init__(self, ruta_archivo="datos_regresion_nn.csv", modelo_filepath="best_nn_model.keras"):
+    def __init__(self, modelo_filepath="best_nn_model.keras"):
         """Inicializa la clase con rutas y variables de estado."""
-        self.ruta_archivo = ruta_archivo
         self.modelo_filepath = modelo_filepath
         self.df = None
         self.columnas_disponibles = []
@@ -25,40 +29,36 @@ class AnalisisRegresionNN:
         self.feature_name, self.target_name = None, None
         self.model = None
         self.history = None
+        self.rutina = Rutina()
         # Los escaladores son cruciales para desescalar al graficar
         self.scaler_X = StandardScaler()
         self.scaler_y = StandardScaler() 
         self.hiperparametros = {} # Almacena los hiperparámetros del último entrenamiento
 
     def cargar_datos(self):
-        """Carga el archivo CSV y prepara datos de ejemplo si no existe."""
-        print(f"Intentando cargar datos desde: {os.path.abspath(self.ruta_archivo)}")
+        """Utiliza el módulo de rutinas para cargar datos desde diversas fuentes."""
+        self.rutina.menuPrincipal()
         try:
-            if not os.path.exists(self.ruta_archivo):
-                print(f"AVISO: El archivo '{self.ruta_archivo}' no existe. Creando uno de ejemplo.")
-                self._crear_archivo_ejemplo()
+            opcion = int(input("\nSeleccione una opción de fuente de datos (0-5): "))
+            if opcion == 0:
+                return False
             
-            self.df = pd.read_csv(self.ruta_archivo)
-            self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
-            if len(self.columnas_disponibles) < 2:
-                raise ValueError("El archivo debe contener al menos dos columnas numéricas.")
+            exito = self.rutina.cargarDatos(opcion)
 
-            print(f"Datos cargados. Columnas numéricas: {len(self.columnas_disponibles)}")
-            return True
-        except Exception as e:
-            print(f"ERROR al cargar/procesar el archivo: {e}")
+            if exito:
+                self.df = self.rutina.datos_actuales
+                self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
+                if len(self.columnas_disponibles) < 2:
+                    raise ValueError("Los datos cargados deben tener al menos dos columnas numéricas.")
+
+                print("\nDatos cargados exitosamente a través de Rutinas.")
+                return True
+            else:
+                print("No se pudieron cargar los datos desde la fuente seleccionada.")
+                return False
+        except (ValueError, IndexError, KeyboardInterrupt) as e:
+            print(f"\nOperación cancelada o error: {e}")
             return False
-
-    def _crear_archivo_ejemplo(self):
-        """Crea un archivo CSV de ejemplo (simulación cuadrática)."""
-        np.random.seed(42)
-        X_ejemplo = np.linspace(0, 50, 500)
-        y_ejemplo = 0.05 * X_ejemplo**2 + 2 * X_ejemplo + 10 + np.random.normal(0, 10, 500)
-        
-        data = {'Tiempo_X': X_ejemplo, 'Posicion_Y': y_ejemplo}
-        df_ejemplo = pd.DataFrame(data)
-        df_ejemplo.to_csv(self.ruta_archivo, index=False)
-        print("Archivo de ejemplo 'datos_regresion_nn.csv' creado.")
 
     def seleccionar_y_preparar_datos(self):
         """Permite al usuario seleccionar X e Y, escala los datos y divide en train/val."""
@@ -303,5 +303,5 @@ class AnalisisRegresionNN:
 
 # --- Código para Ejecutar el Módulo ---
 if __name__ == "__main__":
-    analizador_nn = AnalisisRegresionNN() 
+    analizador_nn = AnalisisRegresionNN()
     analizador_nn.menu()

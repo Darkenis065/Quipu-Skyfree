@@ -4,7 +4,7 @@ asdf_coordinates_schemas==0.4.0
 asdf_standard==1.4.0
 asdf_transform_schemas==0.6.0
 asdf_wcs_schemas==0.5.0
-astro-datalab==2.24.0
+astro-datalab==2.22.1
 astropy==5.3.4
 astropy-iers-data==0.2025.11.10.0.38.31
 astroquery==0.4.11
@@ -58,6 +58,7 @@ sgmllib3k==1.0.0
 six==1.17.0
 soupsieve==2.8
 specutils==1.13.0
+tensorflow
 threadpoolctl==3.6.0
 typing_extensions==4.15.0
 tzdata==2025.2
