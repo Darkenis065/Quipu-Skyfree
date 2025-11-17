@@ -3,62 +3,55 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans, HDBSCAN
 from sklearn.preprocessing import StandardScaler
 import numpy as np
-import os # Para la ruta del archivo
+import os
+import sys
+
+# Agregar el directorio padre al path para importar Rutina
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from Routines.rutinas import Rutina
 
 class AnalisisDatos:
     """
-    Clase para manejar la carga de datos desde un CSV, 
+    Clase para manejar la carga de datos a través del módulo de rutinas,
     aplicar K-Means clustering y visualizar los resultados.
     """
-    def __init__(self, ruta_archivo="datos_cluster.csv"):
+    def __init__(self):
         """
-        Inicializa la clase con la ruta fija del archivo.
+        Inicializa la clase sin una ruta de archivo fija.
         """
-        self.ruta_archivo = ruta_archivo
         self.df = None
         self.columnas_disponibles = []
         self.X_scaled = None
         self.labels = None
         self.columnas_elegidas = []
+        self.rutina = Rutina()
 
     def cargar_datos(self):
         """
-        Carga el archivo CSV en un DataFrame de pandas.
+        Utiliza el módulo de rutinas para cargar datos desde diversas fuentes.
         """
-        print(f"Intentando cargar datos desde: {os.path.abspath(self.ruta_archivo)}")
+        self.rutina.menuPrincipal()
         try:
-            # Crea un archivo de ejemplo si no existe (solo para fines de prueba)
-            if not os.path.exists(self.ruta_archivo):
-                print(f"AVISO: El archivo '{self.ruta_archivo}' no existe. Creando uno de ejemplo.")
-                self._crear_archivo_ejemplo()
+            opcion = int(input("\nSeleccione una opción de fuente de datos (0-5): "))
+            if opcion == 0:
+                return False
 
-            self.df = pd.read_csv(self.ruta_archivo)
-            # Solo usa columnas numéricas para el análisis posterior
-            self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
-            print(f"Datos cargados exitosamente. Columnas numéricas disponibles: {len(self.columnas_disponibles)}")
-            print("\nPrimeras 5 filas de los datos:")
-            print(self.df.head())
-            return True
-        except FileNotFoundError:
-            print(f"ERROR: Archivo no encontrado en la ruta: {self.ruta_archivo}")
+            exito = self.rutina.cargarDatos(opcion)
+
+            if exito:
+                self.df = self.rutina.datos_actuales
+                self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
+                print("\nDatos cargados exitosamente a través de Rutinas.")
+                print(f"Columnas numéricas disponibles: {len(self.columnas_disponibles)}")
+                print("\nPrimeras 5 filas de los datos:")
+                print(self.df.head())
+                return True
+            else:
+                print("No se pudieron cargar los datos desde la fuente seleccionada.")
+                return False
+        except (ValueError, KeyboardInterrupt):
+            print("\nOperación cancelada o entrada no válida.")
             return False
-        except Exception as e:
-            print(f"ERROR al cargar el archivo: {e}")
-            return False
-
-    def _crear_archivo_ejemplo(self):
-        """
-        Método auxiliar para crear un archivo CSV de ejemplo.
-        """
-        data = {
-            'Feature_1_X': np.random.rand(100) * 10,
-            'Feature_2_Y': np.random.rand(100) * 5,
-            'Feature_3_Z': np.random.rand(100) * 20,
-            'Categoria': np.random.choice(['A', 'B', 'C'], 100)
-        }
-        df_ejemplo = pd.DataFrame(data)
-        df_ejemplo.to_csv(self.ruta_archivo, index=False)
-
 
     def seleccionar_columnas(self):
         """
@@ -228,9 +221,6 @@ class AnalisisDatos:
 
 # --- Código para Ejecutar el Módulo ---
 if __name__ == "__main__":
-    # La ruta fija del archivo es 'datos_cluster.csv' por defecto. 
-    # Asegúrate de tener un archivo CSV con ese nombre en el mismo directorio 
-    # o cámbiala al inicializar la clase.
-    # El método cargar_datos() creará un archivo de ejemplo si no lo encuentra.
-    analizador = AnalisisDatos(ruta_archivo="datos_cluster.csv") 
+    # Ahora la carga de datos se gestiona a través del menú interactivo de Rutina
+    analizador = AnalisisDatos()
     analizador.menu()
