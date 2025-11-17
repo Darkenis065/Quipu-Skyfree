@@ -25,6 +25,7 @@ html5lib==1.1
 httplib2==0.22.0
 idna==3.11
 importlib_metadata==8.7.0
+iniconfig==2.3.0
 jaraco.classes==3.4.0
 jaraco.context==6.0.1
 jaraco.functools==4.3.0
@@ -40,11 +41,14 @@ numpy==1.26.3
 packaging==25.0
 pandas==2.1.4
 pillow==10.3.0
+pluggy==1.6.0
 pycparser==2.23
 pycurl==7.45.7
 pycurl-requests==0.5.1
 pyerfa==2.0.1.5
+Pygments==2.19.2
 pyparsing==3.2.5
+pytest==9.0.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
 pyvo==1.8
