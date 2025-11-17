@@ -8,15 +8,18 @@ from tensorflow.keras import layers
 from tensorflow.keras.callbacks import ModelCheckpoint
 import os
 import time
+import sys
+
+# Agregar el directorio padre al path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class AnalisisRegresionNN:
     """
     Clase para manejar la carga de datos, aplicar Regresión con Red Neuronal (TensorFlow/Keras)
     y visualizar el ajuste, permitiendo la configuración de hiperparámetros.
     """
-    def __init__(self, ruta_archivo="datos_regresion_nn.csv", modelo_filepath="best_nn_model.keras"):
+    def __init__(self, modelo_filepath="best_nn_model.keras"):
         """Inicializa la clase con rutas y variables de estado."""
-        self.ruta_archivo = ruta_archivo
         self.modelo_filepath = modelo_filepath
         self.df = None
         self.columnas_disponibles = []
@@ -30,35 +33,31 @@ class AnalisisRegresionNN:
         self.scaler_y = StandardScaler() 
         self.hiperparametros = {} # Almacena los hiperparámetros del último entrenamiento
 
-    def cargar_datos(self):
-        """Carga el archivo CSV y prepara datos de ejemplo si no existe."""
-        print(f"Intentando cargar datos desde: {os.path.abspath(self.ruta_archivo)}")
-        try:
-            if not os.path.exists(self.ruta_archivo):
-                print(f"AVISO: El archivo '{self.ruta_archivo}' no existe. Creando uno de ejemplo.")
-                self._crear_archivo_ejemplo()
-            
-            self.df = pd.read_csv(self.ruta_archivo)
+    def set_datos(self, dataframe):
+        """
+        Establece el dataframe de datos desde una fuente externa.
+        """
+        if dataframe is not None and not dataframe.empty:
+            self.df = dataframe
             self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
             if len(self.columnas_disponibles) < 2:
-                raise ValueError("El archivo debe contener al menos dos columnas numéricas.")
+                print("ADVERTENCIA: Los datos cargados tienen menos de dos columnas numéricas.")
+                self.df = None # Invalidar datos
+            else:
+                print("\nDatos externos cargados en el módulo de Regresión NN.")
+        else:
+            print("ADVERTENCIA: Se intentó cargar un dataframe vacío o nulo.")
 
-            print(f"Datos cargados. Columnas numéricas: {len(self.columnas_disponibles)}")
+    def cargar_datos(self):
+        """
+        Verifica si los datos ya están cargados. Si no, instruye al usuario.
+        """
+        if self.df is not None:
+            print("Utilizando datos ya cargados.")
             return True
-        except Exception as e:
-            print(f"ERROR al cargar/procesar el archivo: {e}")
+        else:
+            print("\nNo hay datos cargados. Por favor, cargue datos desde el menú principal.")
             return False
-
-    def _crear_archivo_ejemplo(self):
-        """Crea un archivo CSV de ejemplo (simulación cuadrática)."""
-        np.random.seed(42)
-        X_ejemplo = np.linspace(0, 50, 500)
-        y_ejemplo = 0.05 * X_ejemplo**2 + 2 * X_ejemplo + 10 + np.random.normal(0, 10, 500)
-        
-        data = {'Tiempo_X': X_ejemplo, 'Posicion_Y': y_ejemplo}
-        df_ejemplo = pd.DataFrame(data)
-        df_ejemplo.to_csv(self.ruta_archivo, index=False)
-        print("Archivo de ejemplo 'datos_regresion_nn.csv' creado.")
 
     def seleccionar_y_preparar_datos(self):
         """Permite al usuario seleccionar X e Y, escala los datos y divide en train/val."""
@@ -303,5 +302,5 @@ class AnalisisRegresionNN:
 
 # --- Código para Ejecutar el Módulo ---
 if __name__ == "__main__":
-    analizador_nn = AnalisisRegresionNN() 
+    analizador_nn = AnalisisRegresionNN()
     analizador_nn.menu()

@@ -6,9 +6,11 @@ import os
 # Agregar el directorio padre al path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Importar desde la carpeta DB
+# Importar desde las carpetas DB, Calculations y ML
 from DB.entrada import Entrada
 from DB.BaseDatos import BaseDatos
+from Calculations.Calculations import MenuCalculos
+from ML.MachineL import MenuML
 
 class Rutina:
     """Orquestador central del sistema de análisis astronómico.
@@ -21,6 +23,8 @@ class Rutina:
         """Inicializa los componentes del sistema."""
         self.entrada = Entrada()
         self.base_datos = BaseDatos()
+        self.menu_calculos = MenuCalculos()
+        self.menu_ml = MenuML()
         self.datos_actuales = None
         self.fuente_actual = None
         self.metadatos = {}
@@ -134,6 +138,34 @@ class Rutina:
         
         return paquete
     
+    def menuPostCarga(self):
+        """Muestra el menú de acciones después de cargar los datos."""
+        while True:
+            print("\n" + "="*50)
+            print("🔬 ¿QUÉ DESEA HACER CON LOS DATOS CARGADOS?")
+            print("="*50)
+            print("  1. Realizar Cálculos Astronómicos")
+            print("  2. Utilizar Herramientas de Machine Learning")
+            print("  3. Cargar un nuevo set de datos")
+            print("\n  0. Salir al menú principal")
+            print("-"*50)
+
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                print("\n🔭 Accediendo al módulo de Cálculos...")
+                self.menu_calculos.mostrar_menu(self.datos_actuales)
+            elif opcion == "2":
+                print("\n🤖 Accediendo al módulo de Machine Learning...")
+                self.menu_ml.mostrar_menu(self.datos_actuales)
+            elif opcion == "3":
+                break # Sale del bucle para volver al menú de carga
+            elif opcion == "0":
+                return "salir" # Señal para salir del programa principal
+            else:
+                print("✗ Opción no válida.")
+        return None
+
     def ejecutar(self):
         """Ejecuta el flujo principal del sistema."""
         while True:
@@ -147,30 +179,20 @@ class Rutina:
                     break
                 
                 if 1 <= opcion <= 5:
-                    exito = self.cargarDatos(opcion)
-                    
-                    if exito:
+                    if self.cargarDatos(opcion):
                         self.procesarDatos()
                         
-                        print("\n🔬 ¿Desea proceder con análisis y cálculos?")
-                        continuar = input("(s/n): ").lower()
-                        
-                        if continuar == 's':
-                            paquete = self.enviarCalculos()
-                            print("\n✓ Datos preparados para análisis")
-                            print(f"  - {paquete['n_registros']} registros")
-                            print(f"  - {len(paquete['columnas'])} variables")
-                            # Aquí se llamaría a Calculos, ML, Educativo
+                        # Mostrar menú post-carga
+                        if self.menuPostCarga() == "salir":
+                            print("\n👋 ¡Hasta pronto!")
+                            break
                     else:
-                        print("✗ No se pudieron cargar los datos")
+                        print("✗ No se pudieron cargar los datos. Volviendo al menú principal.")
                 else:
-                    print("✗ Opción no válida")
+                    print("✗ Opción no válida.")
                     
-            except ValueError:
-                print("✗ Debe ingresar un número")
-            except KeyboardInterrupt:
-                print("\n\n👋 Operación cancelada")
-                break
+            except (ValueError, KeyboardInterrupt):
+                print("\n\n👋 Operación cancelada. Volviendo al menú principal.")
             except Exception as e:
                 print(f"✗ Error inesperado: {e}")
 
