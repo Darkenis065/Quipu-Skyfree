@@ -134,7 +134,7 @@ class AnalisisDatos:
             elif opcion == "2":
                 try:
                     # Aplicar HDBSCAN
-                    hdbscan_clusterer = HDBSCAN(min_cluster_size=5, gen_min_span_tree=True)
+                    hdbscan_clusterer = HDBSCAN(min_cluster_size=5)
                     self.labels = hdbscan_clusterer.fit_predict(self.X_scaled)
 
                     print(f"Clustering HDBSCAN aplicado.")
