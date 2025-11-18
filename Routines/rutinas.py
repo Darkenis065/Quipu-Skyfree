@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 import sys
 import os
 
@@ -12,6 +12,7 @@ from DB.BaseDatos import BaseDatos
 
 # Importar la clase Calculos
 from Calculations.calculos import Calculos
+from ML.MachineL import MenuML
 
 class Rutina:
     """Orquestador central del sistema de análisis astronómico.
@@ -99,6 +100,11 @@ class Rutina:
                 self.metadatos['archivo'] = archivo_guardado
                 
                 print(f"✓ Datos guardados en: {archivo_guardado}")
+                if self.fuente_actual == "DESI":
+                    print("\n🌌 Calculando Photoz automáticamente para DESI...")
+                    if self.aplicarCalculos(calculos_aplicar=["photoz"]):
+                        self.datos_actuales = self.datos_procesados
+                        print("✓ Photoz calculado y datos actualizados.")
             else:
                 print("❌ No se obtuvieron datos de la fuente")
                 return False
@@ -134,7 +140,7 @@ class Rutina:
         
         return True
     
-    def aplicarCalculos(self) -> bool:
+    def aplicarCalculos(self, calculos_aplicar: Optional[List[str]] = None) -> bool:
         """🆕 Aplica cálculos astronómicos a los datos actuales."""
         if self.datos_actuales is None:
             print("⚠️  No hay datos cargados para analizar")
@@ -148,7 +154,8 @@ class Rutina:
             # Aplicar análisis usando la clase Calculos
             self.datos_procesados = self.calculos.analizar_datos_csv(
                 df=self.datos_actuales,
-                fuente=self.fuente_actual
+                fuente=self.fuente_actual,
+                calculos_aplicar=calculos_aplicar
             )
             
             print("\n✅ Cálculos aplicados exitosamente")
@@ -273,7 +280,84 @@ class Rutina:
         }
         
         return paquete
-    
+    def menu_calculos(self):
+        """Muestra el menú de cálculos astronómicos según la fuente de datos."""
+        calculos_disponibles = {
+            "NASA ESI": ["Calcular órbitas", "Calcular velocidades"],
+            "DESI": ["Calcular distancia de Hubble", "Calcular constante de Hubble"],
+            "SDSS": ["Calcular distancia de Hubble", "Calcular constante de Hubble"],
+            "NEO": ["Calcular órbitas"],
+            "local": []
+        }
+
+        fuente = self.fuente_actual
+        if fuente not in calculos_disponibles:
+            print("No hay cálculos disponibles para esta fuente de datos.")
+            return
+
+        opciones = calculos_disponibles[fuente]
+        if not opciones:
+            print("No hay cálculos disponibles para archivos locales.")
+            return
+
+        while True:
+            print("\n" + "="*60)
+            print(f"🔬 CÁLCULOS DISPONIBLES PARA {fuente}")
+            print("="*60)
+            for i, opcion in enumerate(opciones, 1):
+                print(f"{i}. {opcion}")
+            print("0. Volver al menú de análisis")
+            print("-"*60)
+
+            seleccion = input(f"Seleccione un cálculo (1-{len(opciones)}): ")
+
+            try:
+                seleccion = int(seleccion)
+                if 0 < seleccion <= len(opciones):
+                    calculo_seleccionado = opciones[seleccion - 1]
+                    print(f"\nEjecutando '{calculo_seleccionado}'...")
+                    if self.aplicarCalculos(calculos_aplicar=[calculo_seleccionado]):
+                        self.verReporte()
+                        guardar = input("\n💾 ¿Guardar resultados con cálculos? (s/n): ").lower()
+                        if guardar == 's':
+                            nombre_salida = f"{self.fuente_actual}_analisis_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv"
+                            ruta_salida = self.calculos.data_path / nombre_salida
+                            self.datos_procesados.to_csv(ruta_salida, index=False)
+                            print(f"✓ Guardado en: {ruta_salida}")
+                elif seleccion == 0:
+                    break
+                else:
+                    print("Selección no válida.")
+            except ValueError:
+                print("Debe ingresar un número.")
+
+    def menu_analisis(self):
+        """Muestra el menú de análisis y maneja la selección del usuario."""
+        while True:
+            print("\n" + "="*60)
+            print("🔬 MENÚ DE ANÁLISIS")
+            print("="*60)
+            print("1. Realizar cálculos astronómicos")
+            print("2. Usar herramientas de Machine Learning")
+            print("0. Volver al menú principal")
+            print("-"*60)
+
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                self.menu_calculos()
+            elif opcion == "2":
+                print("\n--- Lanzando Módulo de Machine Learning ---")
+                try:
+                    menu_ml = MenuML()
+                    menu_ml.mostrar_menu()
+                except Exception as e:
+                    print(f"ERROR al ejecutar el módulo de Machine Learning: {e}")
+                print("--- Módulo de Machine Learning Finalizado ---")
+            elif opcion == "0":
+                break
+            else:
+                print("Opción no válida. Por favor, intente de nuevo.")
     def ejecutar(self):
         """Ejecuta el flujo principal del sistema."""
         print("\n🚀 Inicializando sistema...")
@@ -298,21 +382,7 @@ class Rutina:
                     
                     if exito:
                         self.procesarDatos()
-                        
-                        print("\n🔬 ¿Desea aplicar cálculos astronómicos a estos datos?")
-                        continuar = input("(s/n): ").lower()
-                        
-                        if continuar == 's':
-                            if self.aplicarCalculos():
-                                self.verReporte()
-                                
-                                # Opción de guardar resultados
-                                guardar = input("\n💾 ¿Guardar resultados con cálculos? (s/n): ").lower()
-                                if guardar == 's':
-                                    nombre_salida = f"{self.fuente_actual}_analisis_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv"
-                                    ruta_salida = self.calculos.data_path / nombre_salida
-                                    self.datos_procesados.to_csv(ruta_salida, index=False)
-                                    print(f"✓ Guardado en: {ruta_salida}")
+                        self.menu_analisis()
                     else:
                         print("❌ No se pudieron cargar los datos")
                 
