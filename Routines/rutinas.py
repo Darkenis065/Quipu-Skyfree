@@ -12,7 +12,6 @@ from DB.BaseDatos import BaseDatos
 
 # Importar la clase Calculos
 from Calculations.calculos import Calculos
-from ML.MachineL import MenuML
 
 class Rutina:
     """Orquestador central del sistema de análisis astronómico.
@@ -349,6 +348,7 @@ class Rutina:
             elif opcion == "2":
                 print("\n--- Lanzando Módulo de Machine Learning ---")
                 try:
+                    from ML.MachineL import MenuML
                     menu_ml = MenuML()
                     menu_ml.mostrar_menu()
                 except Exception as e:
