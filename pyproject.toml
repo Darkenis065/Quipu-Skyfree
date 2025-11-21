@@ -1,0 +1,136 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# ===============================================
+# 1. METADATOS BÁSICOS
+# ===============================================
+name = "QuipuSkyfree"
+version = "1.0.0" # ¡Recuerda incrementar la versión para cada subida a PyPi!
+description = "Sistema de análisis astrónomico"
+readme = "README.md"
+authors = [
+  { name="Maria Moreno, Sebastian Sanchez, Jose Zamora", email="jlzamoraa@udistrital.edu.co" },
+]
+license = { file = "LICENSE" } # Asume que tienes un archivo LICENSE
+
+# Requerimiento de versión de Python
+requires-python = ">=3.11" # Ajusta según la versión más baja que soporte tu código
+
+# Clasificadores (Ayudan a la gente a encontrar tu paquete en PyPi)
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Topic :: Scientific/Engineering :: Astronomy", # Puedes añadir más
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+# ===============================================
+# 2. DEPENDENCIAS
+# (Generadas a partir de tu requirements.txt)
+# ===============================================
+dependencies = [
+    "streamlit", # Necesario para ejecutar tu app Streamlit
+    "asdf",
+    "asdf-astropy",
+    "asdf_coordinates_schemas",
+    "asdf_standard",
+    "asdf_transform_schemas",
+    "asdf_wcs_schemas",
+    "astro-datalab",
+    "astropy",
+    "astropy-iers-data",
+    "astroquery",
+    "attrs",
+    "backports.tarfile",
+    "beautifulsoup4",
+    "certifi",
+    "cffi",
+    "chardet",
+    "charset-normalizer",
+    "contourpy",
+    "cryptography",
+    "cycler",
+    "feedparser",
+    "fonttools",
+    "gwcs",
+    "html5lib",
+    "httplib2",
+    "idna",
+    "importlib_metadata",
+    "jaraco.classes",
+    "jaraco.context",
+    "jaraco.functools",
+    "jeepney",
+    "jmespath",
+    "joblib",
+    "keyring",
+    "kiwisolver",
+    "matplotlib",
+    "more-itertools",
+    "ndcube",
+    "numpy",
+    "packaging",
+    "pandas",
+    "pillow",
+    "pycparser",
+    "pycurl",
+    "pycurl-requests",
+    "pyerfa",
+    "pyparsing",
+    "python-dateutil",
+    "pytz",
+    "pyvo",
+    "PyYAML",
+    "requests",
+    "scikit-learn",
+    "scipy",
+    "SecretStorage",
+    "semantic-version",
+    "sgmllib3k",
+    "six",
+    "streamlit",
+    "soupsieve",
+    "specutils",
+    "tensorflow",
+    "threadpoolctl",
+    "typing_extensions",
+    "tzdata",
+    "urllib3",
+    "webencodings",
+    "zipp",
+    # NOTA: Los paquetes 'pytest' son típicamente para desarrollo y se mueven
+    # a la sección dev-dependencies, pero los dejamos aquí si son críticos
+]
+
+# ===============================================
+# 3. PUNTOS DE ENTRADA (Comandos de Terminal)
+# ===============================================
+[project.scripts]
+# Comando para tu script estándar (asume la función main_script en archivo.py)
+QSkyfree = "QipuSkyfree.Routines.rutinas:menuPrincipal"
+
+# Comando para tu app Streamlit (llama al wrapper que crearemos)
+QSkyfree-GUI = "QuipuSkyfree.streamlit_wrapper:run_streamlit_app"
+
+
+# ===============================================
+# 4. URLs Adicionales
+# ===============================================
+[project.urls]
+"Homepage" = "https://github.com/Darkenis065/Quipu-Skyfree"
+"Bug Tracker" = "https://github.com/Darkenis065/Quipu-Skyfree/issues"
+
+# ===============================================
+# 5. Dependencias de Desarrollo (Opcional)
+# ===============================================
+[tool.setuptools.packages.find]
+where = ["."] # Busca el paquete en el directorio actual
+
+# Si quieres separar dependencias de desarrollo como 'pytest'
+# [project.optional-dependencies]
+# dev = [
+#     "pytest",
+# ]
