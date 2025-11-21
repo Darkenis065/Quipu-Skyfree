@@ -37,6 +37,11 @@ jobs:
           make html
           cd ..
 
+      - name: Crear .nojekyll
+        run: |
+          # Crea el archivo para decirle a GitHub Pages que NO use Jekyll
+          touch docs/_build/html/.nojekyll
+
       - name: Despliegue a GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
