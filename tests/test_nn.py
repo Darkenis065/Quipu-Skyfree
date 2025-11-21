@@ -2,6 +2,8 @@ import pytest
 from unittest.mock import patch, MagicMock, mock_open, call
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 from ML.NN import AnalisisRegresionNN
 
 @pytest.fixture

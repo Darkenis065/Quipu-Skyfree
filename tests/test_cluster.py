@@ -2,6 +2,8 @@ import pytest
 from unittest.mock import patch, MagicMock
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 from ML.Cluster import AnalisisDatos
 
 @pytest.fixture
