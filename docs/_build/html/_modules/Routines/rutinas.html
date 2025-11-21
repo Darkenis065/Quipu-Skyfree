@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html lang="es" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Routines.rutinas &#8212; documentación de Quipu-Skyfree - 21/11/2025</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=2bf1fcf8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=0d52af27" />
+    
+    <script src="../../_static/documentation_options.js?v=7a9cda9e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             accesskey="I">índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Código de módulo</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Routines.rutinas</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Código fuente para Routines.rutinas</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="c1"># Agregar el directorio padre al path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+
+<span class="c1"># Importar desde la carpeta DB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DB.entrada</span><span class="w"> </span><span class="kn">import</span> <span class="n">Entrada</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">DB.BaseDatos</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDatos</span>
+
+<span class="c1"># Importar la clase Calculos</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">Calculations.calculos</span><span class="w"> </span><span class="kn">import</span> <span class="n">Calculos</span>
+
+<div class="viewcode-block" id="Rutina">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Rutina</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Orquestador central del sistema de análisis astronómico.</span>
+<span class="sd">    </span>
+<span class="sd">    Coordina la carga de datos (locales o remotos), su procesamiento,</span>
+<span class="sd">    cálculos científicos y generación de salidas educativas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inicializa los componentes del sistema.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entrada</span> <span class="o">=</span> <span class="n">Entrada</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_datos</span> <span class="o">=</span> <span class="n">BaseDatos</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span> <span class="o">=</span> <span class="n">Calculos</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="s2">&quot;routines/data&quot;</span><span class="p">)</span>  <span class="c1"># 🆕 Integración de Calculos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 🆕 Para guardar datos con cálculos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadatos</span> <span class="o">=</span> <span class="p">{}</span>
+    
+<div class="viewcode-block" id="Rutina.menuPrincipal">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.menuPrincipal">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">menuPrincipal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Muestra el menú principal de opciones.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;🌌 SISTEMA DE ANÁLISIS ASTRONÓMICO EDUCATIVO&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📂 FUENTES DE DATOS:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  1. Archivos locales (CSV/DAT)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  2. SDSS - Galaxias y espectros&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  3. DESI - Objetos del cosmos profundo&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  4. NASA ESI - Exoplanetas&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  5. NEO - Asteroides y cometas&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🔬 ANÁLISIS Y CÁLCULOS:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  6. Ver datasets disponibles&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  7. Analizar dataset guardado&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  8. Ver último reporte&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  0. Salir&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Rutina.cargarDatos">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.cargarDatos">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cargarDatos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opcion</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Carga datos según la opción seleccionada.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            opcion: Número de la fuente seleccionada (1-5)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            True si la carga fue exitosa, False en caso contrario</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">opcion</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📁 Cargando desde archivos locales...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">entrada</span><span class="o">.</span><span class="n">leerDatos</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span> <span class="o">=</span> <span class="s2">&quot;local&quot;</span>
+            
+        <span class="k">elif</span> <span class="n">opcion</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+            <span class="n">fuentes</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;SDSS&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;DESI&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;NASA ESI&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;NEO&quot;</span><span class="p">}</span>
+            <span class="n">fuente</span> <span class="o">=</span> <span class="n">fuentes</span><span class="p">[</span><span class="n">opcion</span><span class="p">]</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🌐 Consultando </span><span class="si">{</span><span class="n">fuente</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Solicitar parámetros según la fuente</span>
+            <span class="k">if</span> <span class="n">fuente</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;SDSS&quot;</span><span class="p">,</span> <span class="s2">&quot;DESI&quot;</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ra</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa RA (grados, ej: 180.0): &quot;</span><span class="p">))</span>
+                    <span class="n">dec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa DEC (grados, ej: 0.0): &quot;</span><span class="p">))</span>
+                    <span class="n">z_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa z-min (ej: 0.05): &quot;</span><span class="p">))</span>
+                    <span class="n">z_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa z-max (ej: 0.3): &quot;</span><span class="p">))</span>
+                    
+                    <span class="n">resultado</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_datos</span><span class="o">.</span><span class="n">conectar</span><span class="p">(</span>
+                        <span class="n">ra</span><span class="o">=</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="n">dec</span><span class="p">,</span> <span class="n">z_min</span><span class="o">=</span><span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span><span class="o">=</span><span class="n">z_max</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">fuente</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ Error: Valores inválidos&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># NASA ESI y NEO no necesitan todos los parámetros</span>
+                <span class="n">resultado</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_datos</span><span class="o">.</span><span class="n">conectar</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">fuente</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">resultado</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Guardar y convertir a DataFrame</span>
+                <span class="n">archivo_guardado</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_datos</span><span class="o">.</span><span class="n">guardardatos</span><span class="p">(</span><span class="n">resultado</span><span class="p">,</span> <span class="n">fuente</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">resultado</span><span class="p">,</span> <span class="s1">&#39;to_pandas&#39;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="o">=</span> <span class="n">resultado</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="o">=</span> <span class="n">resultado</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span> <span class="o">=</span> <span class="n">fuente</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadatos</span><span class="p">[</span><span class="s1">&#39;archivo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">archivo_guardado</span>
+                
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Datos guardados en: </span><span class="si">{</span><span class="n">archivo_guardado</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span> <span class="o">==</span> <span class="s2">&quot;DESI&quot;</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🌌 Calculando Photoz automáticamente para DESI...&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aplicarCalculos</span><span class="p">(</span><span class="n">calculos_aplicar</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;photoz&quot;</span><span class="p">]):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ Photoz calculado y datos actualizados.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ No se obtuvieron datos de la fuente&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="Rutina.procesarDatos">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.procesarDatos">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">procesarDatos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procesa y valida los datos cargados.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠️  No hay datos cargados&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;📊 RESUMEN DE DATOS&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fuente: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registros: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Columnas: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📋 Columnas disponibles:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🔍 Primeras 3 filas:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+        
+        <span class="c1"># Estadísticas básicas solo para columnas numéricas</span>
+        <span class="n">columnas_numericas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">columnas_numericas</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📈 Estadísticas básicas (columnas numéricas):&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="p">[</span><span class="n">columnas_numericas</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+        
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    
+<div class="viewcode-block" id="Rutina.aplicarCalculos">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.aplicarCalculos">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">aplicarCalculos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calculos_aplicar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;🆕 Aplica cálculos astronómicos a los datos actuales.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠️  No hay datos cargados para analizar&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;🔬 APLICANDO CÁLCULOS ASTRONÓMICOS&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Aplicar análisis usando la clase Calculos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span><span class="o">.</span><span class="n">analizar_datos_csv</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="p">,</span>
+                <span class="n">fuente</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span><span class="p">,</span>
+                <span class="n">calculos_aplicar</span><span class="o">=</span><span class="n">calculos_aplicar</span>
+            <span class="p">)</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">✅ Cálculos aplicados exitosamente&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Mostrar columnas nuevas agregadas</span>
+            <span class="n">columnas_originales</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="n">columnas_nuevas</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="n">columnas_originales</span>
+            
+            <span class="k">if</span> <span class="n">columnas_nuevas</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📊 Nuevas columnas calculadas:&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columnas_nuevas</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   • </span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="kc">True</span>
+            
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Error al aplicar cálculos: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Rutina.verReporte">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.verReporte">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verReporte</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;🆕 Muestra el reporte del último análisis.&quot;&quot;&quot;</span>
+        <span class="n">reporte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span><span class="o">.</span><span class="n">generar_reporte</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">reporte</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Rutina.listarDatasetsDisponibles">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.listarDatasetsDisponibles">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listarDatasetsDisponibles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;🆕 Lista los datasets disponibles en routines/data.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;📚 DATASETS DISPONIBLES&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        
+        <span class="n">datasets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span><span class="o">.</span><span class="n">listar_datasets</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">datasets</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠️  No hay datasets en la carpeta &#39;routines/data&#39;&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Carga datos desde las opciones 2-5 para crear datasets&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span><span class="o">.</span><span class="n">obtener_info_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   📁 Ruta: </span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;ruta&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   📊 Columnas (</span><span class="si">{</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;num_columnas&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;columnas&#39;</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ⚠️  Error al leer: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="Rutina.analizarDatasetGuardado">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.analizarDatasetGuardado">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analizarDatasetGuardado</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;🆕 Analiza un dataset previamente guardado.&quot;&quot;&quot;</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span><span class="o">.</span><span class="n">listar_datasets</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">datasets</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">⚠️  No hay datasets disponibles para analizar&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;📊 SELECCIONAR DATASET PARA ANALIZAR&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">seleccion</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Seleccione dataset (1-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span><span class="si">}</span><span class="s2">): &quot;</span><span class="p">))</span>
+            
+            <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">seleccion</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">):</span>
+                <span class="n">dataset_nombre</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="n">seleccion</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🔍 Analizando </span><span class="si">{</span><span class="n">dataset_nombre</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+                
+                <span class="c1"># Analizar dataset</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span><span class="o">.</span><span class="n">analizar_datos_csv</span><span class="p">(</span>
+                    <span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_nombre</span>
+                <span class="p">)</span>
+                
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">✅ Análisis completado&quot;</span><span class="p">)</span>
+                
+                <span class="c1"># Preguntar si desea ver el reporte</span>
+                <span class="n">ver</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">¿Desea ver el reporte completo? (s/n): &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">verReporte</span><span class="p">()</span>
+                
+                <span class="c1"># Preguntar si desea guardar resultados</span>
+                <span class="n">guardar</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">¿Desea guardar los resultados con cálculos? (s/n): &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">guardar</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+                    <span class="n">nombre_salida</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dataset_nombre</span><span class="si">}</span><span class="s2">_calculado.csv&quot;</span>
+                    <span class="n">ruta_salida</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span><span class="o">.</span><span class="n">data_path</span> <span class="o">/</span> <span class="n">nombre_salida</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">ruta_salida</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Resultados guardados en: </span><span class="si">{</span><span class="n">ruta_salida</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ Selección inválida&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+                
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ Debe ingresar un número&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Rutina.enviarCalculos">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.enviarCalculos">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enviarCalculos</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepara los datos para enviar al módulo de Cálculos.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Diccionario con datos y metadatos preparados</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        
+        <span class="n">paquete</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;datos&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="p">,</span>
+            <span class="s1">&#39;datos_procesados&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span><span class="p">,</span>
+            <span class="s1">&#39;fuente&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span><span class="p">,</span>
+            <span class="s1">&#39;columnas&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
+            <span class="s1">&#39;n_registros&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datos_actuales</span><span class="p">),</span>
+            <span class="s1">&#39;metadatos&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadatos</span><span class="p">,</span>
+            <span class="s1">&#39;tiene_calculos&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">}</span>
+        
+        <span class="k">return</span> <span class="n">paquete</span></div>
+
+<div class="viewcode-block" id="Rutina.menu_calculos">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.menu_calculos">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">menu_calculos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Muestra el menú de cálculos astronómicos según la fuente de datos.&quot;&quot;&quot;</span>
+        <span class="n">calculos_disponibles</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;NASA ESI&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Calcular órbitas&quot;</span><span class="p">,</span> <span class="s2">&quot;Calcular velocidades&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;DESI&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Calcular distancia de Hubble&quot;</span><span class="p">,</span> <span class="s2">&quot;Calcular constante de Hubble&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;SDSS&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Calcular distancia de Hubble&quot;</span><span class="p">,</span> <span class="s2">&quot;Calcular constante de Hubble&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;NEO&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Calcular órbitas&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;local&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+
+        <span class="n">fuente</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span>
+        <span class="k">if</span> <span class="n">fuente</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">calculos_disponibles</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No hay cálculos disponibles para esta fuente de datos.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">opciones</span> <span class="o">=</span> <span class="n">calculos_disponibles</span><span class="p">[</span><span class="n">fuente</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opciones</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No hay cálculos disponibles para archivos locales.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🔬 CÁLCULOS DISPONIBLES PARA </span><span class="si">{</span><span class="n">fuente</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">opcion</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">opciones</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">opcion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;0. Volver al menú de análisis&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+
+            <span class="n">seleccion</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Seleccione un cálculo (1-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">opciones</span><span class="p">)</span><span class="si">}</span><span class="s2">): &quot;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">seleccion</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seleccion</span><span class="p">)</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">seleccion</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">opciones</span><span class="p">):</span>
+                    <span class="n">calculo_seleccionado</span> <span class="o">=</span> <span class="n">opciones</span><span class="p">[</span><span class="n">seleccion</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Ejecutando &#39;</span><span class="si">{</span><span class="n">calculo_seleccionado</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aplicarCalculos</span><span class="p">(</span><span class="n">calculos_aplicar</span><span class="o">=</span><span class="p">[</span><span class="n">calculo_seleccionado</span><span class="p">]):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">verReporte</span><span class="p">()</span>
+                        <span class="n">guardar</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">💾 ¿Guardar resultados con cálculos? (s/n): &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">guardar</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+                            <span class="n">nombre_salida</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fuente_actual</span><span class="si">}</span><span class="s2">_analisis_</span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+                            <span class="n">ruta_salida</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculos</span><span class="o">.</span><span class="n">data_path</span> <span class="o">/</span> <span class="n">nombre_salida</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">datos_procesados</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">ruta_salida</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Guardado en: </span><span class="si">{</span><span class="n">ruta_salida</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">seleccion</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Selección no válida.&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debe ingresar un número.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Rutina.menu_analisis">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.menu_analisis">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">menu_analisis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Muestra el menú de análisis y maneja la selección del usuario.&quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;🔬 MENÚ DE ANÁLISIS&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. Realizar cálculos astronómicos&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. Usar herramientas de Machine Learning&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;0. Volver al menú principal&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+
+            <span class="n">opcion</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Seleccione una opción: &quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">opcion</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">menu_calculos</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">opcion</span> <span class="o">==</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Lanzando Módulo de Machine Learning ---&quot;</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">ML.MachineL</span><span class="w"> </span><span class="kn">import</span> <span class="n">MenuML</span>
+                    <span class="n">menu_ml</span> <span class="o">=</span> <span class="n">MenuML</span><span class="p">()</span>
+                    <span class="n">menu_ml</span><span class="o">.</span><span class="n">mostrar_menu</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR al ejecutar el módulo de Machine Learning: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Módulo de Machine Learning Finalizado ---&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">opcion</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Opción no válida. Por favor, intente de nuevo.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Rutina.ejecutar">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.Rutina.ejecutar">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ejecutar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ejecuta el flujo principal del sistema.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🚀 Inicializando sistema...&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Módulo de Entrada: OK&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Base de Datos: OK&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Módulo de Cálculos: OK&quot;</span><span class="p">)</span>
+        
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">menuPrincipal</span><span class="p">()</span>
+            
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">opcion</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Seleccione una opción (0-8): &quot;</span><span class="p">))</span>
+                
+                <span class="k">if</span> <span class="n">opcion</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">👋 ¡Hasta pronto!&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   Gracias por usar el Sistema de Análisis Astronómico&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+                
+                <span class="c1"># Cargar datos de fuentes remotas o locales</span>
+                <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">opcion</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">exito</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cargarDatos</span><span class="p">(</span><span class="n">opcion</span><span class="p">)</span>
+                    
+                    <span class="k">if</span> <span class="n">exito</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">procesarDatos</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">menu_analisis</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ No se pudieron cargar los datos&quot;</span><span class="p">)</span>
+                
+                <span class="c1"># Ver datasets disponibles</span>
+                <span class="k">elif</span> <span class="n">opcion</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">listarDatasetsDisponibles</span><span class="p">()</span>
+                
+                <span class="c1"># Analizar dataset guardado</span>
+                <span class="k">elif</span> <span class="n">opcion</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">analizarDatasetGuardado</span><span class="p">()</span>
+                
+                <span class="c1"># Ver último reporte</span>
+                <span class="k">elif</span> <span class="n">opcion</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">verReporte</span><span class="p">()</span>
+                
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ Opción no válida&quot;</span><span class="p">)</span>
+                    
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ Debe ingresar un número&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">👋 Operación cancelada por el usuario&quot;</span><span class="p">)</span>
+                <span class="n">continuar</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;¿Desea salir del sistema? (s/n): &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">continuar</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Error inesperado: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   El sistema continuará ejecutándose...&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../source/modules/Routines.html#Routines.rutinas.main">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Función principal para ejecutar el sistema.&quot;&quot;&quot;</span>
+    <span class="n">sistema</span> <span class="o">=</span> <span class="n">Rutina</span><span class="p">()</span>
+    <span class="n">sistema</span><span class="o">.</span><span class="n">ejecutar</span><span class="p">()</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             >índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Código de módulo</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Routines.rutinas</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Maria Alejandra Moreno, Juan Sebastian Sanchez, Jose Luis Zamora..
+      Creado usando <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

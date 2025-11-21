@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="es" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DB.BaseDatos &#8212; documentación de Quipu-Skyfree - 21/11/2025</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=2bf1fcf8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=0d52af27" />
+    
+    <script src="../../_static/documentation_options.js?v=7a9cda9e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             accesskey="I">índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Código de módulo</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DB.BaseDatos</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Código fuente para DB.BaseDatos</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astroquery.sdss</span><span class="w"> </span><span class="kn">import</span> <span class="n">SDSS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dl</span><span class="w"> </span><span class="kn">import</span> <span class="n">queryClient</span> <span class="k">as</span> <span class="n">qc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astroquery.nasa_exoplanet_archive</span><span class="w"> </span><span class="kn">import</span> <span class="n">NasaExoplanetArchive</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astroquery.jplhorizons</span><span class="w"> </span><span class="kn">import</span> <span class="n">Horizons</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astroquery.mpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPC</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="BaseDatos">
+<a class="viewcode-back" href="../../source/modules/DB.html#DB.BaseDatos.BaseDatos">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseDatos</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clase para gestionar consultas y almacenamiento de datos astronómicos</span>
+<span class="sd">    desde diferentes fuentes (SDSS, DESI, NASA ESI, NEO).</span>
+
+<span class="sd">    Esta clase permite realizar consultas a distintas bases de datos </span>
+<span class="sd">    astronómicas y guardar los resultados localmente en formato CSV.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limite</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inicializa la clase con un límite máximo de resultados por consulta.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            limite (int, optional): Número máximo de resultados que puede devolver una consulta. </span>
+<span class="sd">                Por defecto es 10000.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limite</span> <span class="o">=</span> <span class="n">limite</span>
+
+<div class="viewcode-block" id="BaseDatos.conectar">
+<a class="viewcode-back" href="../../source/modules/DB.html#DB.BaseDatos.BaseDatos.conectar">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conectar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tipo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Conecta y consulta diferentes bases de datos astronómicas según la fuente indicada.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ra (float, optional): Ascensión recta central de la búsqueda (en grados). </span>
+<span class="sd">                Por defecto 180.0 si no se especifica.</span>
+<span class="sd">            dec (float, optional): Declinación central de la búsqueda (en grados). </span>
+<span class="sd">                Por defecto 0.0 si no se especifica.</span>
+<span class="sd">            z_max (float, optional): Límite superior del rango de corrimiento al rojo. </span>
+<span class="sd">                Por defecto 0.3.</span>
+<span class="sd">            z_min (float, optional): Límite inferior del rango de corrimiento al rojo. </span>
+<span class="sd">                Por defecto 0.05.</span>
+<span class="sd">            tipo (str, optional): Tipo de objeto a buscar (reservado para futuras implementaciones).</span>
+<span class="sd">            source (str): Fuente de datos a consultar. Puede ser una de las siguientes:</span>
+<span class="sd">                - &quot;SDSS&quot;</span>
+<span class="sd">                - &quot;DESI&quot;</span>
+<span class="sd">                - &quot;NASA ESI&quot;</span>
+<span class="sd">                - &quot;NEO&quot;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object | None: </span>
+<span class="sd">                - Un objeto de tipo `astropy.table.Table` o `pandas.DataFrame` con los resultados.</span>
+<span class="sd">                - `None` si la fuente no está soportada o la consulta falla.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Valores por defecto</span>
+        <span class="n">ra</span> <span class="o">=</span> <span class="mf">180.0</span> <span class="k">if</span> <span class="n">ra</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">dec</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+        <span class="n">z_max</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="k">if</span> <span class="n">z_max</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">z_max</span><span class="p">)</span>
+        <span class="n">z_min</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="k">if</span> <span class="n">z_min</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">z_min</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;SDSS&quot;</span><span class="p">:</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa el radio de búsqueda (en grados): &quot;</span><span class="p">))</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT TOP </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">limite</span><span class="si">}</span>
+<span class="s2">                p.objid, p.ra, p.dec, s.z, s.class</span>
+<span class="s2">            FROM PhotoObj AS p</span>
+<span class="s2">            JOIN SpecObj AS s ON s.bestobjid = p.objid</span>
+<span class="s2">            WHERE s.z BETWEEN </span><span class="si">{</span><span class="n">z_min</span><span class="si">}</span><span class="s2"> AND </span><span class="si">{</span><span class="n">z_max</span><span class="si">}</span>
+<span class="s2">            AND p.ra BETWEEN </span><span class="si">{</span><span class="n">ra</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">radius</span><span class="si">}</span><span class="s2"> AND </span><span class="si">{</span><span class="n">ra</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">radius</span><span class="si">}</span>
+<span class="s2">            AND p.dec BETWEEN </span><span class="si">{</span><span class="n">dec</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">radius</span><span class="si">}</span><span class="s2"> AND </span><span class="si">{</span><span class="n">dec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">radius</span><span class="si">}</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Ejecutando consulta a SDSS...&quot;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">SDSS</span><span class="o">.</span><span class="n">query_sql</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Consulta completada.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">elif</span> <span class="n">source</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;DESI&quot;</span><span class="p">:</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa el radio de búsqueda (en grados): &quot;</span><span class="p">))</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                SELECT TOP </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">limite</span><span class="si">}</span>
+<span class="s2">                ra, dec ,type, flux_g, flux_r, flux_z, flux_w1, flux_w2 , flux_ivar_g, flux_ivar_r, flux_ivar_z</span>
+<span class="s2">                FROM ls_dr9.tractor</span>
+<span class="s2">                WHERE ra BETWEEN </span><span class="si">{</span><span class="n">ra</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">radius</span><span class="si">}</span><span class="s2"> AND </span><span class="si">{</span><span class="n">ra</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">radius</span><span class="si">}</span>
+<span class="s2">                AND dec BETWEEN </span><span class="si">{</span><span class="n">dec</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">radius</span><span class="si">}</span><span class="s2"> AND </span><span class="si">{</span><span class="n">dec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">radius</span><span class="si">}</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">qc</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">sql</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;pandas&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">elif</span> <span class="n">source</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;NASA ESI&quot;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">NasaExoplanetArchive</span><span class="o">.</span><span class="n">query_criteria</span><span class="p">(</span>
+                <span class="n">table</span><span class="o">=</span><span class="s2">&quot;pscomppars&quot;</span><span class="p">,</span>
+                <span class="n">select</span><span class="o">=</span><span class="s2">&quot;pl_name,hostname,disc_year,pl_orbper,pl_rade,pl_bmasse, pl_tranmid ,st_teff&quot;</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="s2">&quot;disc_year &gt; 2015 AND pl_rade IS NOT NULL&quot;</span><span class="p">,</span>
+                <span class="n">order</span><span class="o">=</span><span class="s2">&quot;disc_year DESC&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">elif</span> <span class="n">source</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;NEO&quot;</span><span class="p">:</span>
+            <span class="c1"># Lista manual de cuerpos menores (id: nombre)</span>
+            <span class="n">cuerpos</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="s2">&quot;Ceres&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="s2">&quot;Pallas&quot;</span><span class="p">,</span> <span class="s2">&quot;4&quot;</span><span class="p">:</span> <span class="s2">&quot;Vesta&quot;</span><span class="p">,</span> <span class="s2">&quot;433&quot;</span><span class="p">:</span> <span class="s2">&quot;Eros&quot;</span><span class="p">,</span> <span class="s2">&quot;1862&quot;</span><span class="p">:</span> <span class="s2">&quot;Apollo&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;4179&quot;</span><span class="p">:</span> <span class="s2">&quot;Toutatis&quot;</span><span class="p">,</span> <span class="s2">&quot;3200&quot;</span><span class="p">:</span> <span class="s2">&quot;Phaethon&quot;</span><span class="p">,</span> <span class="s2">&quot;1620&quot;</span><span class="p">:</span> <span class="s2">&quot;Geographos&quot;</span><span class="p">,</span> <span class="s2">&quot;25143&quot;</span><span class="p">:</span> <span class="s2">&quot;Itokawa&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;101955&quot;</span><span class="p">:</span> <span class="s2">&quot;Bennu&quot;</span><span class="p">,</span> <span class="s2">&quot;99942&quot;</span><span class="p">:</span> <span class="s2">&quot;Apophis&quot;</span><span class="p">,</span> <span class="s2">&quot;162173&quot;</span><span class="p">:</span> <span class="s2">&quot;Ryugu&quot;</span><span class="p">,</span> <span class="s2">&quot;253&quot;</span><span class="p">:</span> <span class="s2">&quot;Mathilde&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;65803&quot;</span><span class="p">:</span> <span class="s2">&quot;Didymos&quot;</span><span class="p">,</span> <span class="s2">&quot;99907&quot;</span><span class="p">:</span> <span class="s2">&quot;2013 VY4&quot;</span>
+            <span class="p">}</span>
+
+            <span class="c1"># Muestra parcial</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="mi">8</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;== Lista breve de cuerpos menores (muestra) ==&quot;</span><span class="p">)</span>
+            <span class="n">short</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cuerpos</span><span class="o">.</span><span class="n">items</span><span class="p">())[:</span><span class="n">N</span><span class="p">]</span>
+            <span class="n">df_short</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">short</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">df_short</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;== Para ver la lista completa escribe &#39;done&#39; o &#39;list&#39; ==&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;== Para salir escribe &#39;exit&#39; ==&quot;</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">o</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Ingresa el id o nombre del objeto a consultar (ej: 101955 o Bennu): &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;exit&quot;</span><span class="p">,</span> <span class="s2">&quot;salir&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saliendo.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+
+                <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">):</span>
+                    <span class="n">df_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cuerpos</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">== Lista completa de cuerpos menores disponibles ==&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">df_all</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                    <span class="k">continue</span>
+
+                <span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">cuerpos</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">o</span>
+                    <span class="n">target</span> <span class="o">=</span> <span class="n">cuerpos</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">matches</span> <span class="o">=</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cuerpos</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">key</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Se encontraron varias coincidencias:&quot;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Escribe el id exacto o nombre más específico.&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">target</span> <span class="o">=</span> <span class="n">o</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Consultando &#39;</span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&#39; en JPL Horizons...&quot;</span><span class="p">)</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="n">Horizons</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">id_type</span><span class="o">=</span><span class="s1">&#39;smallbody&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;@sun&#39;</span><span class="p">,</span>
+                                   <span class="n">epochs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2025-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">:</span><span class="s1">&#39;2025-01-10&#39;</span><span class="p">,</span> <span class="s1">&#39;step&#39;</span><span class="p">:</span><span class="s1">&#39;1d&#39;</span><span class="p">})</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">elements</span><span class="p">()</span>
+                    <span class="n">eph</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">ephemerides</span><span class="p">()</span>
+
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Elementos orbitales ===&quot;</span><span class="p">)</span>
+                    <span class="n">cols_elem</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;targetname&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;incl&#39;</span><span class="p">,</span> <span class="s1">&#39;Omega&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">colnames</span><span class="p">]</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">cols_elem</span><span class="p">])</span>
+
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Efemérides (primeras filas) ===&quot;</span><span class="p">)</span>
+                    <span class="n">cols_eph</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;datetime_str&#39;</span><span class="p">,</span> <span class="s1">&#39;RA&#39;</span><span class="p">,</span> <span class="s1">&#39;DEC&#39;</span><span class="p">,</span> <span class="s1">&#39;delta&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">eph</span><span class="o">.</span><span class="n">colnames</span><span class="p">]</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">eph</span><span class="p">[</span><span class="n">cols_eph</span><span class="p">][:</span><span class="mi">10</span><span class="p">])</span>
+
+                    <span class="k">return</span> <span class="n">result</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Error al consultar &#39;</span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Prueba con otro id/nombre o escribe &#39;list&#39; para ver la lista disponible.&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fuente no soportada por el momento.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="BaseDatos.guardardatos">
+<a class="viewcode-back" href="../../source/modules/DB.html#DB.BaseDatos.BaseDatos.guardardatos">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">guardardatos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Guarda los resultados de la consulta en un archivo CSV dentro de la carpeta &#39;data&#39;.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            result (object): Resultado obtenido de la consulta (tabla o DataFrame).</span>
+<span class="sd">            source (str): Fuente de la cual provienen los datos (usada para nombrar el archivo).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Guardando consulta&quot;</span><span class="p">)</span>
+            <span class="n">fecha</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">_%H-%M-%S&quot;</span><span class="p">)</span>
+            <span class="n">nombre_archivo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fecha</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nombre_archivo</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">archivo</span><span class="p">:</span>
+                <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">archivo</span><span class="p">)</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Archivo &#39;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">fecha</span><span class="si">}</span><span class="s2">.csv&#39; creado con éxito.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No se obtuvieron resultados.&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bloque principal de ejecución.</span>
+
+<span class="sd">    Permite realizar una prueba manual del módulo solicitando al usuario </span>
+<span class="sd">    los parámetros de búsqueda y guardando los resultados obtenidos.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bd</span> <span class="o">=</span> <span class="n">BaseDatos</span><span class="p">(</span><span class="n">limite</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Seleccione la fuente de sus datos (SDSS, DESI, NASA ESI, NEO ): &quot;</span><span class="p">)</span>
+    <span class="n">ra</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa Ra (en grados): &quot;</span><span class="p">))</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa Dec (en grados): &quot;</span><span class="p">))</span>
+    <span class="n">z_min</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa z-min: &quot;</span><span class="p">))</span>
+    <span class="n">z_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Ingresa z-max: &quot;</span><span class="p">))</span>
+
+    <span class="n">resultado</span> <span class="o">=</span> <span class="n">bd</span><span class="o">.</span><span class="n">conectar</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="n">dec</span><span class="p">,</span> <span class="n">z_min</span><span class="o">=</span><span class="n">z_min</span><span class="p">,</span> <span class="n">z_max</span><span class="o">=</span><span class="n">z_max</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">bd</span><span class="o">.</span><span class="n">guardardatos</span><span class="p">(</span><span class="n">resultado</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             >índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Código de módulo</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DB.BaseDatos</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Maria Alejandra Moreno, Juan Sebastian Sanchez, Jose Luis Zamora..
+      Creado usando <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

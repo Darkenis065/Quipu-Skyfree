@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="es" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DB package &#8212; documentación de Quipu-Skyfree - 21/11/2025</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=2bf1fcf8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=0d52af27" />
+    
+    <script src="../../_static/documentation_options.js?v=7a9cda9e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" />
+    <link rel="next" title="ML package" href="ML.html" />
+    <link rel="prev" title="Calculations package" href="Calculations.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             accesskey="I">índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="right" >
+          <a href="ML.html" title="ML package"
+             accesskey="N">siguiente</a> |</li>
+        <li class="right" >
+          <a href="Calculations.html" title="Calculations package"
+             accesskey="P">anterior</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DB package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="db-package">
+<h1>DB package<a class="headerlink" href="#db-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-DB.BaseDatos">
+<span id="db-basedatos-module"></span><h2>DB.BaseDatos module<a class="headerlink" href="#module-DB.BaseDatos" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="DB.BaseDatos.BaseDatos">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">DB.BaseDatos.</span></span><span class="sig-name descname"><span class="pre">BaseDatos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/DB/BaseDatos.html#BaseDatos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#DB.BaseDatos.BaseDatos" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Clase para gestionar consultas y almacenamiento de datos astronómicos
+desde diferentes fuentes (SDSS, DESI, NASA ESI, NEO).</p>
+<p>Esta clase permite realizar consultas a distintas bases de datos 
+astronómicas y guardar los resultados localmente en formato CSV.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="DB.BaseDatos.BaseDatos.conectar">
+<span class="sig-name descname"><span class="pre">conectar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tipo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/DB/BaseDatos.html#BaseDatos.conectar"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#DB.BaseDatos.BaseDatos.conectar" title="Link to this definition">¶</a></dt>
+<dd><p>Conecta y consulta diferentes bases de datos astronómicas según la fuente indicada.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>ra (float, optional): Ascensión recta central de la búsqueda (en grados). </dt><dd><p>Por defecto 180.0 si no se especifica.</p>
+</dd>
+<dt>dec (float, optional): Declinación central de la búsqueda (en grados). </dt><dd><p>Por defecto 0.0 si no se especifica.</p>
+</dd>
+<dt>z_max (float, optional): Límite superior del rango de corrimiento al rojo. </dt><dd><p>Por defecto 0.3.</p>
+</dd>
+<dt>z_min (float, optional): Límite inferior del rango de corrimiento al rojo. </dt><dd><p>Por defecto 0.05.</p>
+</dd>
+</dl>
+<p>tipo (str, optional): Tipo de objeto a buscar (reservado para futuras implementaciones).
+source (str): Fuente de datos a consultar. Puede ser una de las siguientes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>«SDSS»</p></li>
+<li><p>«DESI»</p></li>
+<li><p>«NASA ESI»</p></li>
+<li><p>«NEO»</p></li>
+</ul>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>object | None: </dt><dd><ul class="simple">
+<li><p>Un objeto de tipo <cite>astropy.table.Table</cite> o <cite>pandas.DataFrame</cite> con los resultados.</p></li>
+<li><p><cite>None</cite> si la fuente no está soportada o la consulta falla.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DB.BaseDatos.BaseDatos.guardardatos">
+<span class="sig-name descname"><span class="pre">guardardatos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/DB/BaseDatos.html#BaseDatos.guardardatos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#DB.BaseDatos.BaseDatos.guardardatos" title="Link to this definition">¶</a></dt>
+<dd><p>Guarda los resultados de la consulta en un archivo CSV dentro de la carpeta “data”.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>result (object): Resultado obtenido de la consulta (tabla o DataFrame).
+source (str): Fuente de la cual provienen los datos (usada para nombrar el archivo).</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-DB.entrada">
+<span id="db-entrada-module"></span><h2>DB.entrada module<a class="headerlink" href="#module-DB.entrada" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="DB.entrada.Entrada">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">DB.entrada.</span></span><span class="sig-name descname"><span class="pre">Entrada</span></span><a class="reference internal" href="../../_modules/DB/entrada.html#Entrada"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#DB.entrada.Entrada" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Clase para manejar la entrada de datos desde archivos en la carpeta “data”.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="DB.entrada.Entrada.leerDatos">
+<span class="sig-name descname"><span class="pre">leerDatos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/DB/entrada.html#Entrada.leerDatos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#DB.entrada.Entrada.leerDatos" title="Link to this definition">¶</a></dt>
+<dd><p>Lee los datos del archivo seleccionado usando pandas.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="DB.entrada.Entrada.seleccionarArchivo">
+<span class="sig-name descname"><span class="pre">seleccionarArchivo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/DB/entrada.html#Entrada.seleccionarArchivo"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#DB.entrada.Entrada.seleccionarArchivo" title="Link to this definition">¶</a></dt>
+<dd><p>Busca los archivos en la carpeta “data” y permite al usuario seleccionar uno.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-DB">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-DB" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Tabla de contenido</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">DB package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-DB.BaseDatos">DB.BaseDatos module</a><ul>
+<li><a class="reference internal" href="#DB.BaseDatos.BaseDatos"><code class="docutils literal notranslate"><span class="pre">BaseDatos</span></code></a><ul>
+<li><a class="reference internal" href="#DB.BaseDatos.BaseDatos.conectar"><code class="docutils literal notranslate"><span class="pre">BaseDatos.conectar()</span></code></a></li>
+<li><a class="reference internal" href="#DB.BaseDatos.BaseDatos.guardardatos"><code class="docutils literal notranslate"><span class="pre">BaseDatos.guardardatos()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-DB.entrada">DB.entrada module</a><ul>
+<li><a class="reference internal" href="#DB.entrada.Entrada"><code class="docutils literal notranslate"><span class="pre">Entrada</span></code></a><ul>
+<li><a class="reference internal" href="#DB.entrada.Entrada.leerDatos"><code class="docutils literal notranslate"><span class="pre">Entrada.leerDatos()</span></code></a></li>
+<li><a class="reference internal" href="#DB.entrada.Entrada.seleccionarArchivo"><code class="docutils literal notranslate"><span class="pre">Entrada.seleccionarArchivo()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-DB">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Tema anterior</h4>
+    <p class="topless"><a href="Calculations.html"
+                          title="capítulo anterior">Calculations package</a></p>
+  </div>
+  <div>
+    <h4>Próximo tema</h4>
+    <p class="topless"><a href="ML.html"
+                          title="próximo capítulo">ML package</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>Esta página</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/source/modules/DB.rst.txt"
+            rel="nofollow">Mostrar el código</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             >índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="right" >
+          <a href="ML.html" title="ML package"
+             >siguiente</a> |</li>
+        <li class="right" >
+          <a href="Calculations.html" title="Calculations package"
+             >anterior</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DB package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Maria Alejandra Moreno, Juan Sebastian Sanchez, Jose Luis Zamora..
+      Creado usando <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
