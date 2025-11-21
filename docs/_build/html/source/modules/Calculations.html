@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="es" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Calculations package &#8212; documentación de Quipu-Skyfree - 21/11/2025</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=2bf1fcf8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=0d52af27" />
+    
+    <script src="../../_static/documentation_options.js?v=7a9cda9e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" />
+    <link rel="next" title="DB package" href="DB.html" />
+    <link rel="prev" title="Routines package" href="Routines.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             accesskey="I">índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="right" >
+          <a href="DB.html" title="DB package"
+             accesskey="N">siguiente</a> |</li>
+        <li class="right" >
+          <a href="Routines.html" title="Routines package"
+             accesskey="P">anterior</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Calculations package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="calculations-package">
+<h1>Calculations package<a class="headerlink" href="#calculations-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-Calculations.calculos">
+<span id="calculations-calculos-module"></span><h2>Calculations.calculos module<a class="headerlink" href="#module-Calculations.calculos" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Calculations.calculos.</span></span><span class="sig-name descname"><span class="pre">Calculos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'routines/data'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Clase para realizar cálculos astronómicos y análisis de datasets.
+Incluye cálculos de constante de Hubble, redshift, velocidad angular,
+órbitas y análisis de datos CSV de diferentes fuentes (SDSS, DESI, NEO, NASA ESI).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.AU">
+<span class="sig-name descname"><span class="pre">AU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">149600000000.0</span></em><a class="headerlink" href="#Calculations.calculos.Calculos.AU" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.C">
+<span class="sig-name descname"><span class="pre">C</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">299792.458</span></em><a class="headerlink" href="#Calculations.calculos.Calculos.C" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.G">
+<span class="sig-name descname"><span class="pre">G</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.6743e-11</span></em><a class="headerlink" href="#Calculations.calculos.Calculos.G" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.H0">
+<span class="sig-name descname"><span class="pre">H0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">70</span></em><a class="headerlink" href="#Calculations.calculos.Calculos.H0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.MASA_SOL">
+<span class="sig-name descname"><span class="pre">MASA_SOL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.989e+30</span></em><a class="headerlink" href="#Calculations.calculos.Calculos.MASA_SOL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.analizar_datos_csv">
+<span class="sig-name descname"><span class="pre">analizar_datos_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fuente</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculos_aplicar</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.analizar_datos_csv"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.analizar_datos_csv" title="Link to this definition">¶</a></dt>
+<dd><p>Analiza un dataset CSV o DataFrame y aplica cálculos astronómicos.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dataset_name: Nombre del dataset a analizar (sin extensión .csv)
+df: DataFrame con los datos (alternativa a dataset_name)
+fuente: Nombre de la fuente de datos (SDSS, DESI, NEO, NASA ESI)
+calculos_aplicar: Lista de cálculos a aplicar [“hubble”, “redshift”, “orbital”]</p>
+</dd>
+<dt>Returns:</dt><dd><p>DataFrame con los datos originales y columnas calculadas adicionales</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.calcularDistanciaHubble">
+<span class="sig-name descname"><span class="pre">calcularDistanciaHubble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.calcularDistanciaHubble"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.calcularDistanciaHubble" title="Link to this definition">¶</a></dt>
+<dd><p>Calcula la distancia usando la ley de Hubble a partir del redshift.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>z: Redshift
+H0: Constante de Hubble (opcional, usa valor por defecto si no se proporciona)</p>
+</dd>
+<dt>Returns:</dt><dd><p>Diccionario con distancia en diferentes unidades y velocidad</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.calcularHubble">
+<span class="sig-name descname"><span class="pre">calcularHubble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">velocidad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distancia</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.calcularHubble"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.calcularHubble" title="Link to this definition">¶</a></dt>
+<dd><p>Calcula la constante de Hubble a partir de velocidad y distancia.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>velocidad: Velocidad de recesión en km/s
+distancia: Distancia en Mpc</p>
+</dd>
+<dt>Returns:</dt><dd><p>Constante de Hubble en km/s/Mpc</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.calcularOrbita">
+<span class="sig-name descname"><span class="pre">calcularOrbita</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masa_central</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excentricidad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.calcularOrbita"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.calcularOrbita" title="Link to this definition">¶</a></dt>
+<dd><p>Calcula parámetros orbitales de un objeto.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>masa_central: Masa del objeto central en kg
+radio: Semi-eje mayor en metros
+excentricidad: Excentricidad de la órbita (0 = circular)</p>
+</dd>
+<dt>Returns:</dt><dd><p>Diccionario con período, velocidad, energía orbital</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.calcularPhotoz">
+<span class="sig-name descname"><span class="pre">calcularPhotoz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flux_g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flux_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.calcularPhotoz"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.calcularPhotoz" title="Link to this definition">¶</a></dt>
+<dd><p>Calcula el redshift fotométrico (photo-z) usando colores fotométricos.</p>
+<p>Utiliza relaciones empíricas basadas en los colores g-r y r-z.
+Método simplificado basado en templates de galaxias.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>flux_g: Flujo en banda g (nanomaggies)
+flux_r: Flujo en banda r (nanomaggies)
+flux_z: Flujo en banda z (nanomaggies, opcional)</p>
+</dd>
+<dt>Returns:</dt><dd><p>Diccionario con photo-z estimado y métricas de calidad</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.calcularRedshift">
+<span class="sig-name descname"><span class="pre">calcularRedshift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">longitud_observada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longitud_emitida</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.calcularRedshift"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.calcularRedshift" title="Link to this definition">¶</a></dt>
+<dd><p>Calcula el redshift (corrimiento al rojo) de un objeto.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>longitud_observada: Longitud de onda observada
+longitud_emitida: Longitud de onda emitida en reposo</p>
+</dd>
+<dt>Returns:</dt><dd><p>Valor del redshift z</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.calcularVelocidadAngular">
+<span class="sig-name descname"><span class="pre">calcularVelocidadAngular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">periodo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.calcularVelocidadAngular"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.calcularVelocidadAngular" title="Link to this definition">¶</a></dt>
+<dd><p>Calcula la velocidad angular y lineal de un objeto en órbita.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>periodo: Período orbital en segundos
+radio: Radio de la órbita en metros</p>
+</dd>
+<dt>Returns:</dt><dd><p>Diccionario con velocidad_angular (rad/s) y velocidad_lineal (m/s)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.generar_reporte">
+<span class="sig-name descname"><span class="pre">generar_reporte</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.generar_reporte"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.generar_reporte" title="Link to this definition">¶</a></dt>
+<dd><p>Genera un reporte textual del último análisis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.listar_datasets">
+<span class="sig-name descname"><span class="pre">listar_datasets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.listar_datasets"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.listar_datasets" title="Link to this definition">¶</a></dt>
+<dd><p>Retorna la lista de datasets disponibles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.obtener_info_dataset">
+<span class="sig-name descname"><span class="pre">obtener_info_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.obtener_info_dataset"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.obtener_info_dataset" title="Link to this definition">¶</a></dt>
+<dd><p>Obtiene información básica de un dataset sin cargarlo completamente.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dataset_name: Nombre del dataset</p>
+</dd>
+<dt>Returns:</dt><dd><p>Diccionario con información del dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Calculations.calculos.Calculos.obtener_ultimo_analisis">
+<span class="sig-name descname"><span class="pre">obtener_ultimo_analisis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/Calculations/calculos.html#Calculos.obtener_ultimo_analisis"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#Calculations.calculos.Calculos.obtener_ultimo_analisis" title="Link to this definition">¶</a></dt>
+<dd><p>Retorna el resultado del último análisis realizado.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="calculations-main-module">
+<h2>Calculations.main module<a class="headerlink" href="#calculations-main-module" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-Calculations">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Calculations" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Tabla de contenido</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Calculations package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-Calculations.calculos">Calculations.calculos module</a><ul>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos"><code class="docutils literal notranslate"><span class="pre">Calculos</span></code></a><ul>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.AU"><code class="docutils literal notranslate"><span class="pre">Calculos.AU</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.C"><code class="docutils literal notranslate"><span class="pre">Calculos.C</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.G"><code class="docutils literal notranslate"><span class="pre">Calculos.G</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.H0"><code class="docutils literal notranslate"><span class="pre">Calculos.H0</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.MASA_SOL"><code class="docutils literal notranslate"><span class="pre">Calculos.MASA_SOL</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.analizar_datos_csv"><code class="docutils literal notranslate"><span class="pre">Calculos.analizar_datos_csv()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.calcularDistanciaHubble"><code class="docutils literal notranslate"><span class="pre">Calculos.calcularDistanciaHubble()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.calcularHubble"><code class="docutils literal notranslate"><span class="pre">Calculos.calcularHubble()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.calcularOrbita"><code class="docutils literal notranslate"><span class="pre">Calculos.calcularOrbita()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.calcularPhotoz"><code class="docutils literal notranslate"><span class="pre">Calculos.calcularPhotoz()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.calcularRedshift"><code class="docutils literal notranslate"><span class="pre">Calculos.calcularRedshift()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.calcularVelocidadAngular"><code class="docutils literal notranslate"><span class="pre">Calculos.calcularVelocidadAngular()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.generar_reporte"><code class="docutils literal notranslate"><span class="pre">Calculos.generar_reporte()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.listar_datasets"><code class="docutils literal notranslate"><span class="pre">Calculos.listar_datasets()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.obtener_info_dataset"><code class="docutils literal notranslate"><span class="pre">Calculos.obtener_info_dataset()</span></code></a></li>
+<li><a class="reference internal" href="#Calculations.calculos.Calculos.obtener_ultimo_analisis"><code class="docutils literal notranslate"><span class="pre">Calculos.obtener_ultimo_analisis()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#calculations-main-module">Calculations.main module</a></li>
+<li><a class="reference internal" href="#module-Calculations">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Tema anterior</h4>
+    <p class="topless"><a href="Routines.html"
+                          title="capítulo anterior">Routines package</a></p>
+  </div>
+  <div>
+    <h4>Próximo tema</h4>
+    <p class="topless"><a href="DB.html"
+                          title="próximo capítulo">DB package</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>Esta página</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/source/modules/Calculations.rst.txt"
+            rel="nofollow">Mostrar el código</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             >índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="right" >
+          <a href="DB.html" title="DB package"
+             >siguiente</a> |</li>
+        <li class="right" >
+          <a href="Routines.html" title="Routines package"
+             >anterior</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Calculations package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Maria Alejandra Moreno, Juan Sebastian Sanchez, Jose Luis Zamora..
+      Creado usando <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

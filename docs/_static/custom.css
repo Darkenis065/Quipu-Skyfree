@@ -1,0 +1,63 @@
+/* _static/custom.css (Versión 2.0 más agresiva) */
+
+/* Asegura el ajuste de línea en los enlaces de la barra lateral */
+/* Permitir que los títulos largos hagan salto de línea */
+div.sphinxsidebar .sphinxsidebarwrapper ul li a {
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+/* También aplica a las entradas sin enlace */
+div.sphinxsidebar .sphinxsidebarwrapper ul li {
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+/* Forzar que el texto pueda romperse y bajar de línea */
+div.sphinxsidebar,
+div.sphinxsidebarwrapper,
+div.sphinxsidebarwrapper ul,
+div.sphinxsidebarwrapper ul li,
+div.sphinxsidebarwrapper ul li a {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow: visible !important;
+}
+
+/* Bizstyle a veces fija anchura muy pequeña */
+div.sphinxsidebar {
+    width: 260px !important;  /* ajustable */
+}
+
+/* También puede fallar porque el enlace está en display: block con min-width */
+div.sphinxsidebarwrapper ul li a {
+    display: block !important;
+    max-width: 100% !important;
+}
+/* Forzar salto de línea en todos los enlaces del sidebar */
+div.sphinxsidebar a.reference {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    display: block !important;
+    max-width: 100% !important;
+}
+
+/* Asegurar que los elementos li no restrinjan el ancho */
+div.sphinxsidebar li {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Evitar que elementos internos tengan nowrap */
+div.sphinxsidebar .toctree-l1,
+div.sphinxsidebar .toctree-l2,
+div.sphinxsidebar .toctree-l3 {
+    white-space: normal !important;
+}
+
+/* Aumentar un poco el ancho del sidebar para evitar cortes bruscos */
+div.sphinxsidebar {
+    width: 240px !important;
+}
+

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html lang="es" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>ML package &#8212; documentación de Quipu-Skyfree - 21/11/2025</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=2bf1fcf8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=0d52af27" />
+    
+    <script src="../../_static/documentation_options.js?v=7a9cda9e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" />
+    <link rel="prev" title="DB package" href="DB.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             accesskey="I">índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="right" >
+          <a href="DB.html" title="DB package"
+             accesskey="P">anterior</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ML package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="ml-package">
+<h1>ML package<a class="headerlink" href="#ml-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-ML.Cluster">
+<span id="ml-cluster-module"></span><h2>ML.Cluster module<a class="headerlink" href="#module-ML.Cluster" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ML.Cluster.AnalisisDatos">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ML.Cluster.</span></span><span class="sig-name descname"><span class="pre">AnalisisDatos</span></span><a class="reference internal" href="../../_modules/ML/Cluster.html#AnalisisDatos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.Cluster.AnalisisDatos" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Clase para manejar la carga de datos a través del módulo de rutinas,
+aplicar K-Means clustering y visualizar los resultados.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.Cluster.AnalisisDatos.aplicar_clustering">
+<span class="sig-name descname"><span class="pre">aplicar_clustering</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/Cluster.html#AnalisisDatos.aplicar_clustering"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.Cluster.AnalisisDatos.aplicar_clustering" title="Link to this definition">¶</a></dt>
+<dd><p>Aplica el algoritmo de clustering seleccionado (K-Means o HDBSCAN) a las variables seleccionadas.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.Cluster.AnalisisDatos.cargar_datos">
+<span class="sig-name descname"><span class="pre">cargar_datos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/Cluster.html#AnalisisDatos.cargar_datos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.Cluster.AnalisisDatos.cargar_datos" title="Link to this definition">¶</a></dt>
+<dd><p>Utiliza el módulo de rutinas para cargar datos desde diversas fuentes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.Cluster.AnalisisDatos.graficar_clusters">
+<span class="sig-name descname"><span class="pre">graficar_clusters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/Cluster.html#AnalisisDatos.graficar_clusters"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.Cluster.AnalisisDatos.graficar_clusters" title="Link to this definition">¶</a></dt>
+<dd><p>Genera una gráfica de dispersión con Matplotlib de los clusters encontrados.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.Cluster.AnalisisDatos.menu">
+<span class="sig-name descname"><span class="pre">menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/Cluster.html#AnalisisDatos.menu"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.Cluster.AnalisisDatos.menu" title="Link to this definition">¶</a></dt>
+<dd><p>Menú principal para interactuar con las funciones de análisis de datos.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.Cluster.AnalisisDatos.seleccionar_columnas">
+<span class="sig-name descname"><span class="pre">seleccionar_columnas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/Cluster.html#AnalisisDatos.seleccionar_columnas"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.Cluster.AnalisisDatos.seleccionar_columnas" title="Link to this definition">¶</a></dt>
+<dd><p>Permite al usuario seleccionar dos columnas (Y y X) por su índice numérico.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ML.MachineL">
+<span id="ml-machinel-module"></span><h2>ML.MachineL module<a class="headerlink" href="#module-ML.MachineL" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ML.MachineL.MenuML">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ML.MachineL.</span></span><span class="sig-name descname"><span class="pre">MenuML</span></span><a class="reference internal" href="../../_modules/ML/MachineL.html#MenuML"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.MachineL.MenuML" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Una clase para mostrar un menú y lanzar los módulos de Machine Learning.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.MachineL.MenuML.mostrar_menu">
+<span class="sig-name descname"><span class="pre">mostrar_menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/MachineL.html#MenuML.mostrar_menu"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.MachineL.MenuML.mostrar_menu" title="Link to this definition">¶</a></dt>
+<dd><p>Muestra el menú principal de Machine Learning y maneja la selección del usuario.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ML.NN">
+<span id="ml-nn-module"></span><h2>ML.NN module<a class="headerlink" href="#module-ML.NN" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ML.NN.AnalisisRegresionNN">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ML.NN.</span></span><span class="sig-name descname"><span class="pre">AnalisisRegresionNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelo_filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'best_nn_model.keras'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/NN.html#AnalisisRegresionNN"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.NN.AnalisisRegresionNN" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Clase para manejar la carga de datos, aplicar Regresión con Red Neuronal (TensorFlow/Keras)
+y visualizar el ajuste, permitiendo la configuración de hiperparámetros.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.NN.AnalisisRegresionNN.cargar_datos">
+<span class="sig-name descname"><span class="pre">cargar_datos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/NN.html#AnalisisRegresionNN.cargar_datos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.NN.AnalisisRegresionNN.cargar_datos" title="Link to this definition">¶</a></dt>
+<dd><p>Utiliza el módulo de rutinas para cargar datos desde diversas fuentes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.NN.AnalisisRegresionNN.configurar_hiperparametros">
+<span class="sig-name descname"><span class="pre">configurar_hiperparametros</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/NN.html#AnalisisRegresionNN.configurar_hiperparametros"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.NN.AnalisisRegresionNN.configurar_hiperparametros" title="Link to this definition">¶</a></dt>
+<dd><p>Pide al usuario los hiperparámetros para el entrenamiento.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.NN.AnalisisRegresionNN.entrenar_red_neuronal">
+<span class="sig-name descname"><span class="pre">entrenar_red_neuronal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/NN.html#AnalisisRegresionNN.entrenar_red_neuronal"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.NN.AnalisisRegresionNN.entrenar_red_neuronal" title="Link to this definition">¶</a></dt>
+<dd><p>Define, compila y entrena la red neuronal con los hiperparámetros dados.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.NN.AnalisisRegresionNN.graficar_y_registrar_resultados">
+<span class="sig-name descname"><span class="pre">graficar_y_registrar_resultados</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/NN.html#AnalisisRegresionNN.graficar_y_registrar_resultados"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.NN.AnalisisRegresionNN.graficar_y_registrar_resultados" title="Link to this definition">¶</a></dt>
+<dd><p>Carga el mejor modelo, genera gráficos de predicción/error/curvas y guarda registro.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.NN.AnalisisRegresionNN.menu">
+<span class="sig-name descname"><span class="pre">menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/NN.html#AnalisisRegresionNN.menu"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.NN.AnalisisRegresionNN.menu" title="Link to this definition">¶</a></dt>
+<dd><p>Menú principal para interactuar con las funciones de la red neuronal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ML.NN.AnalisisRegresionNN.seleccionar_y_preparar_datos">
+<span class="sig-name descname"><span class="pre">seleccionar_y_preparar_datos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/ML/NN.html#AnalisisRegresionNN.seleccionar_y_preparar_datos"><span class="viewcode-link"><span class="pre">[fuente]</span></span></a><a class="headerlink" href="#ML.NN.AnalisisRegresionNN.seleccionar_y_preparar_datos" title="Link to this definition">¶</a></dt>
+<dd><p>Permite al usuario seleccionar X e Y, escala los datos y divide en train/val.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ML">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ML" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Tabla de contenido</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">ML package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ML.Cluster">ML.Cluster module</a><ul>
+<li><a class="reference internal" href="#ML.Cluster.AnalisisDatos"><code class="docutils literal notranslate"><span class="pre">AnalisisDatos</span></code></a><ul>
+<li><a class="reference internal" href="#ML.Cluster.AnalisisDatos.aplicar_clustering"><code class="docutils literal notranslate"><span class="pre">AnalisisDatos.aplicar_clustering()</span></code></a></li>
+<li><a class="reference internal" href="#ML.Cluster.AnalisisDatos.cargar_datos"><code class="docutils literal notranslate"><span class="pre">AnalisisDatos.cargar_datos()</span></code></a></li>
+<li><a class="reference internal" href="#ML.Cluster.AnalisisDatos.graficar_clusters"><code class="docutils literal notranslate"><span class="pre">AnalisisDatos.graficar_clusters()</span></code></a></li>
+<li><a class="reference internal" href="#ML.Cluster.AnalisisDatos.menu"><code class="docutils literal notranslate"><span class="pre">AnalisisDatos.menu()</span></code></a></li>
+<li><a class="reference internal" href="#ML.Cluster.AnalisisDatos.seleccionar_columnas"><code class="docutils literal notranslate"><span class="pre">AnalisisDatos.seleccionar_columnas()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-ML.MachineL">ML.MachineL module</a><ul>
+<li><a class="reference internal" href="#ML.MachineL.MenuML"><code class="docutils literal notranslate"><span class="pre">MenuML</span></code></a><ul>
+<li><a class="reference internal" href="#ML.MachineL.MenuML.mostrar_menu"><code class="docutils literal notranslate"><span class="pre">MenuML.mostrar_menu()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-ML.NN">ML.NN module</a><ul>
+<li><a class="reference internal" href="#ML.NN.AnalisisRegresionNN"><code class="docutils literal notranslate"><span class="pre">AnalisisRegresionNN</span></code></a><ul>
+<li><a class="reference internal" href="#ML.NN.AnalisisRegresionNN.cargar_datos"><code class="docutils literal notranslate"><span class="pre">AnalisisRegresionNN.cargar_datos()</span></code></a></li>
+<li><a class="reference internal" href="#ML.NN.AnalisisRegresionNN.configurar_hiperparametros"><code class="docutils literal notranslate"><span class="pre">AnalisisRegresionNN.configurar_hiperparametros()</span></code></a></li>
+<li><a class="reference internal" href="#ML.NN.AnalisisRegresionNN.entrenar_red_neuronal"><code class="docutils literal notranslate"><span class="pre">AnalisisRegresionNN.entrenar_red_neuronal()</span></code></a></li>
+<li><a class="reference internal" href="#ML.NN.AnalisisRegresionNN.graficar_y_registrar_resultados"><code class="docutils literal notranslate"><span class="pre">AnalisisRegresionNN.graficar_y_registrar_resultados()</span></code></a></li>
+<li><a class="reference internal" href="#ML.NN.AnalisisRegresionNN.menu"><code class="docutils literal notranslate"><span class="pre">AnalisisRegresionNN.menu()</span></code></a></li>
+<li><a class="reference internal" href="#ML.NN.AnalisisRegresionNN.seleccionar_y_preparar_datos"><code class="docutils literal notranslate"><span class="pre">AnalisisRegresionNN.seleccionar_y_preparar_datos()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-ML">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Tema anterior</h4>
+    <p class="topless"><a href="DB.html"
+                          title="capítulo anterior">DB package</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>Esta página</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/source/modules/ML.rst.txt"
+            rel="nofollow">Mostrar el código</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             >índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="right" >
+          <a href="DB.html" title="DB package"
+             >anterior</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ML package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Maria Alejandra Moreno, Juan Sebastian Sanchez, Jose Luis Zamora..
+      Creado usando <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

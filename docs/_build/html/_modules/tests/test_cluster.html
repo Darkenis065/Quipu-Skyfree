@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html lang="es" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tests.test_cluster &#8212; documentación de Quipu-Skyfree - 21/11/2025</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=2bf1fcf8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=0d52af27" />
+    
+    <script src="../../_static/documentation_options.js?v=7a9cda9e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             accesskey="I">índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Código de módulo</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tests.test_cluster</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Código fuente para tests.test_cluster</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">MagicMock</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ML.Cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalisisDatos</span>
+
+<div class="viewcode-block" id="analisis_datos">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.analisis_datos">[documentos]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">analisis_datos</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture to create an instance of AnalisisDatos.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AnalisisDatos</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="mock_rutina">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.mock_rutina">[documentos]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mock_rutina</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture to mock the Rutina class.&quot;&quot;&quot;</span>
+    <span class="n">mock</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+    <span class="n">mock</span><span class="o">.</span><span class="n">datos_actuales</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+        <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+        <span class="s1">&#39;col3&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="n">mock</span><span class="o">.</span><span class="n">cargarDatos</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">mock</span></div>
+
+
+<div class="viewcode-block" id="test_cargar_datos_exito">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.test_cargar_datos_exito">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cargar_datos_exito</span><span class="p">(</span><span class="n">analisis_datos</span><span class="p">,</span> <span class="n">mock_rutina</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test successful data loading.&quot;&quot;&quot;</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">rutina</span> <span class="o">=</span> <span class="n">mock_rutina</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s1">&#39;builtins.input&#39;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">cargar_datos</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">analisis_datos</span><span class="o">.</span><span class="n">columnas_disponibles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span></div>
+
+
+<div class="viewcode-block" id="test_cargar_datos_fallido">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.test_cargar_datos_fallido">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cargar_datos_fallido</span><span class="p">(</span><span class="n">analisis_datos</span><span class="p">,</span> <span class="n">mock_rutina</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test failed data loading.&quot;&quot;&quot;</span>
+    <span class="n">mock_rutina</span><span class="o">.</span><span class="n">cargarDatos</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">rutina</span> <span class="o">=</span> <span class="n">mock_rutina</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s1">&#39;builtins.input&#39;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s1">&#39;1&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">cargar_datos</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="test_seleccionar_columnas_exito">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.test_seleccionar_columnas_exito">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_seleccionar_columnas_exito</span><span class="p">(</span><span class="n">analisis_datos</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test successful column selection.&quot;&quot;&quot;</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+        <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+        <span class="s1">&#39;col3&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">columnas_disponibles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">,</span> <span class="s1">&#39;col3&#39;</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s1">&#39;builtins.input&#39;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">]):</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">seleccionar_columnas</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">columnas_elegidas</span> <span class="o">==</span> <span class="p">[</span><span class="s1">&#39;col2&#39;</span><span class="p">,</span> <span class="s1">&#39;col1&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">X_scaled</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="test_seleccionar_columnas_invalidas">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.test_seleccionar_columnas_invalidas">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_seleccionar_columnas_invalidas</span><span class="p">(</span><span class="n">analisis_datos</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test invalid column selection.&quot;&quot;&quot;</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+        <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+    <span class="p">})</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">columnas_disponibles</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s1">&#39;builtins.input&#39;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">]):</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">seleccionar_columnas</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="test_aplicar_clustering_kmeans_exito">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.test_aplicar_clustering_kmeans_exito">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_aplicar_clustering_kmeans_exito</span><span class="p">(</span><span class="n">analisis_datos</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test successful K-Means clustering.&quot;&quot;&quot;</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">X_scaled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s1">&#39;builtins.input&#39;</span><span class="p">,</span> <span class="n">side_effect</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">]):</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">aplicar_clustering</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="test_aplicar_clustering_hdbscan_exito">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.test_aplicar_clustering_hdbscan_exito">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_aplicar_clustering_hdbscan_exito</span><span class="p">(</span><span class="n">analisis_datos</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test successful HDBSCAN clustering.&quot;&quot;&quot;</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">X_scaled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s1">&#39;builtins.input&#39;</span><span class="p">,</span> <span class="n">return_value</span><span class="o">=</span><span class="s1">&#39;2&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">aplicar_clustering</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">analisis_datos</span><span class="o">.</span><span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="test_graficar_clusters">
+<a class="viewcode-back" href="../../source/modules/tests.html#tests.test_cluster.test_graficar_clusters">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_graficar_clusters</span><span class="p">(</span><span class="n">analisis_datos</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test cluster graphing.&quot;&quot;&quot;</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">X_scaled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;col1&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s1">&#39;col2&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">)})</span>
+    <span class="n">analisis_datos</span><span class="o">.</span><span class="n">columnas_elegidas</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;col1&#39;</span><span class="p">,</span> <span class="s1">&#39;col2&#39;</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s1">&#39;matplotlib.pyplot.show&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_show</span><span class="p">:</span>
+        <span class="n">analisis_datos</span><span class="o">.</span><span class="n">graficar_clusters</span><span class="p">()</span>
+        <span class="n">mock_show</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             >índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Código de módulo</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tests.test_cluster</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Maria Alejandra Moreno, Juan Sebastian Sanchez, Jose Luis Zamora..
+      Creado usando <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
