@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+
+<html lang="es" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculations.calculos &#8212; documentación de Quipu-Skyfree - 21/11/2025</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=2bf1fcf8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=0d52af27" />
+    
+    <script src="../../_static/documentation_options.js?v=7a9cda9e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/translations.js?v=f85f4cfb"></script>
+    
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             accesskey="I">índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Código de módulo</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Calculations.calculos</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Código fuente para Calculations.calculos</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+
+<div class="viewcode-block" id="Calculos">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Calculos</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clase para realizar cálculos astronómicos y análisis de datasets.</span>
+<span class="sd">    Incluye cálculos de constante de Hubble, redshift, velocidad angular,</span>
+<span class="sd">    órbitas y análisis de datos CSV de diferentes fuentes (SDSS, DESI, NEO, NASA ESI).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Constantes físicas</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="mf">299792.458</span>  <span class="c1"># Velocidad de la luz en km/s</span>
+    <span class="n">H0</span> <span class="o">=</span> <span class="mi">70</span>  <span class="c1"># Constante de Hubble en km/s/Mpc (valor por defecto)</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="mf">6.67430e-11</span>  <span class="c1"># Constante gravitacional en m^3 kg^-1 s^-2</span>
+    <span class="n">AU</span> <span class="o">=</span> <span class="mf">1.496e11</span>  <span class="c1"># Unidad astronómica en metros</span>
+    <span class="n">MASA_SOL</span> <span class="o">=</span> <span class="mf">1.989e30</span>  <span class="c1"># Masa del Sol en kg</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;routines/data&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inicializa la clase con la ruta a los datos.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_path: Ruta a la carpeta que contiene los archivos CSV</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ultimo_analisis</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_escanear_datasets</span><span class="p">()</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_escanear_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Escanea la carpeta de datos y lista los archivos CSV disponibles.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠️  La ruta </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">}</span><span class="s2"> no existe. Creándola...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span>
+        
+        <span class="n">csv_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.csv&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">csv_files</span><span class="p">:</span>
+            <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">stem</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">file</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Datasets encontrados: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Calculos.calcularHubble">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.calcularHubble">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcularHubble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocidad</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">distancia</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calcula la constante de Hubble a partir de velocidad y distancia.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            velocidad: Velocidad de recesión en km/s</span>
+<span class="sd">            distancia: Distancia en Mpc</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Constante de Hubble en km/s/Mpc</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">distancia</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;La distancia no puede ser cero&quot;</span><span class="p">)</span>
+        
+        <span class="n">H</span> <span class="o">=</span> <span class="n">velocidad</span> <span class="o">/</span> <span class="n">distancia</span>
+        <span class="k">return</span> <span class="n">H</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.calcularRedshift">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.calcularRedshift">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcularRedshift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">longitud_observada</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">longitud_emitida</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calcula el redshift (corrimiento al rojo) de un objeto.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            longitud_observada: Longitud de onda observada</span>
+<span class="sd">            longitud_emitida: Longitud de onda emitida en reposo</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Valor del redshift z</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">longitud_emitida</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;La longitud de onda emitida no puede ser cero&quot;</span><span class="p">)</span>
+        
+        <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">longitud_observada</span> <span class="o">-</span> <span class="n">longitud_emitida</span><span class="p">)</span> <span class="o">/</span> <span class="n">longitud_emitida</span>
+        <span class="k">return</span> <span class="n">z</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.calcularVelocidadAngular">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.calcularVelocidadAngular">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcularVelocidadAngular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">periodo</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">radio</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calcula la velocidad angular y lineal de un objeto en órbita.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            periodo: Período orbital en segundos</span>
+<span class="sd">            radio: Radio de la órbita en metros</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Diccionario con velocidad_angular (rad/s) y velocidad_lineal (m/s)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">periodo</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;El período no puede ser cero&quot;</span><span class="p">)</span>
+        
+        <span class="n">omega</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="n">periodo</span>
+        <span class="n">v_lineal</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">*</span> <span class="n">radio</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;velocidad_angular&quot;</span><span class="p">:</span> <span class="n">omega</span><span class="p">,</span>
+            <span class="s2">&quot;velocidad_lineal&quot;</span><span class="p">:</span> <span class="n">v_lineal</span><span class="p">,</span>
+            <span class="s2">&quot;periodo&quot;</span><span class="p">:</span> <span class="n">periodo</span><span class="p">,</span>
+            <span class="s2">&quot;radio&quot;</span><span class="p">:</span> <span class="n">radio</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.calcularOrbita">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.calcularOrbita">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcularOrbita</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">masa_central</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">radio</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">excentricidad</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calcula parámetros orbitales de un objeto.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            masa_central: Masa del objeto central en kg</span>
+<span class="sd">            radio: Semi-eje mayor en metros</span>
+<span class="sd">            excentricidad: Excentricidad de la órbita (0 = circular)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Diccionario con período, velocidad, energía orbital</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Tercera ley de Kepler para el período</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">radio</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">*</span> <span class="n">masa_central</span><span class="p">))</span>
+        
+        <span class="c1"># Velocidad orbital (circular)</span>
+        <span class="n">v_orbital</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">*</span> <span class="n">masa_central</span> <span class="o">/</span> <span class="n">radio</span><span class="p">)</span>
+        
+        <span class="c1"># Energía orbital específica</span>
+        <span class="n">energia</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">*</span> <span class="n">masa_central</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">radio</span><span class="p">)</span>
+        
+        <span class="c1"># Perihelio y afelio</span>
+        <span class="n">perihelio</span> <span class="o">=</span> <span class="n">radio</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">excentricidad</span><span class="p">)</span>
+        <span class="n">afelio</span> <span class="o">=</span> <span class="n">radio</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">excentricidad</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;periodo_segundos&quot;</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span>
+            <span class="s2">&quot;periodo_dias&quot;</span><span class="p">:</span> <span class="n">T</span> <span class="o">/</span> <span class="mi">86400</span><span class="p">,</span>
+            <span class="s2">&quot;periodo_años&quot;</span><span class="p">:</span> <span class="n">T</span> <span class="o">/</span> <span class="p">(</span><span class="mi">86400</span> <span class="o">*</span> <span class="mf">365.25</span><span class="p">),</span>
+            <span class="s2">&quot;velocidad_orbital&quot;</span><span class="p">:</span> <span class="n">v_orbital</span><span class="p">,</span>
+            <span class="s2">&quot;energia_especifica&quot;</span><span class="p">:</span> <span class="n">energia</span><span class="p">,</span>
+            <span class="s2">&quot;perihelio&quot;</span><span class="p">:</span> <span class="n">perihelio</span><span class="p">,</span>
+            <span class="s2">&quot;afelio&quot;</span><span class="p">:</span> <span class="n">afelio</span><span class="p">,</span>
+            <span class="s2">&quot;excentricidad&quot;</span><span class="p">:</span> <span class="n">excentricidad</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.calcularPhotoz">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.calcularPhotoz">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcularPhotoz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flux_g</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">flux_r</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">flux_z</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calcula el redshift fotométrico (photo-z) usando colores fotométricos.</span>
+<span class="sd">        </span>
+<span class="sd">        Utiliza relaciones empíricas basadas en los colores g-r y r-z.</span>
+<span class="sd">        Método simplificado basado en templates de galaxias.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            flux_g: Flujo en banda g (nanomaggies)</span>
+<span class="sd">            flux_r: Flujo en banda r (nanomaggies)</span>
+<span class="sd">            flux_z: Flujo en banda z (nanomaggies, opcional)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Diccionario con photo-z estimado y métricas de calidad</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Evitar logaritmos de valores no positivos</span>
+        <span class="k">if</span> <span class="n">flux_g</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">flux_r</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;photo_z&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                <span class="s1">&#39;color_gr&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                <span class="s1">&#39;color_rz&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                <span class="s1">&#39;calidad&#39;</span><span class="p">:</span> <span class="s1">&#39;mala&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;metodo&#39;</span><span class="p">:</span> <span class="s1">&#39;photo-z&#39;</span>
+            <span class="p">}</span>
+        
+        <span class="c1"># Convertir flujos a magnitudes: m = 22.5 - 2.5*log10(flux)</span>
+        <span class="n">mag_g</span> <span class="o">=</span> <span class="mf">22.5</span> <span class="o">-</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">flux_g</span><span class="p">)</span>
+        <span class="n">mag_r</span> <span class="o">=</span> <span class="mf">22.5</span> <span class="o">-</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">flux_r</span><span class="p">)</span>
+        
+        <span class="c1"># Calcular color g-r</span>
+        <span class="n">color_gr</span> <span class="o">=</span> <span class="n">mag_g</span> <span class="o">-</span> <span class="n">mag_r</span>
+        
+        <span class="c1"># Relación empírica simplificada para photo-z</span>
+        <span class="c1"># Basada en templates de galaxias típicas</span>
+        <span class="c1"># z ≈ a*(g-r) + b  (calibración típica)</span>
+        
+        <span class="c1"># Coeficientes calibrados para galaxias</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mf">0.25</span>  <span class="c1"># Pendiente típica</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1</span>  <span class="c1"># Intersección</span>
+        
+        <span class="c1"># Cálculo base con color g-r</span>
+        <span class="n">photo_z_base</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">color_gr</span> <span class="o">+</span> <span class="n">b</span>
+        
+        <span class="c1"># Si tenemos banda z, mejorar la estimación</span>
+        <span class="k">if</span> <span class="n">flux_z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">flux_z</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mag_z</span> <span class="o">=</span> <span class="mf">22.5</span> <span class="o">-</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">flux_z</span><span class="p">)</span>
+            <span class="n">color_rz</span> <span class="o">=</span> <span class="n">mag_r</span> <span class="o">-</span> <span class="n">mag_z</span>
+            
+            <span class="c1"># Corrección con segundo color</span>
+            <span class="c1"># Para galaxias rojas: z tiende a ser mayor</span>
+            <span class="c1"># Para galaxias azules: z tiende a ser menor</span>
+            <span class="n">correction</span> <span class="o">=</span> <span class="mf">0.15</span> <span class="o">*</span> <span class="n">color_rz</span>
+            <span class="n">photo_z</span> <span class="o">=</span> <span class="n">photo_z_base</span> <span class="o">+</span> <span class="n">correction</span>
+            
+            <span class="c1"># Estimar calidad basada en consistencia de colores</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">color_gr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2.0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">color_rz</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.5</span><span class="p">:</span>
+                <span class="n">calidad</span> <span class="o">=</span> <span class="s1">&#39;buena&#39;</span>
+            <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">color_gr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">3.0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">color_rz</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2.5</span><span class="p">:</span>
+                <span class="n">calidad</span> <span class="o">=</span> <span class="s1">&#39;media&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">calidad</span> <span class="o">=</span> <span class="s1">&#39;baja&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">photo_z</span> <span class="o">=</span> <span class="n">photo_z_base</span>
+            <span class="n">color_rz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            
+            <span class="c1"># Calidad solo con un color</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">color_gr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">2.0</span><span class="p">:</span>
+                <span class="n">calidad</span> <span class="o">=</span> <span class="s1">&#39;media&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">calidad</span> <span class="o">=</span> <span class="s1">&#39;baja&#39;</span>
+        
+        <span class="c1"># Asegurar que photo-z sea no negativo</span>
+        <span class="n">photo_z</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">photo_z</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;photo_z&#39;</span><span class="p">:</span> <span class="n">photo_z</span><span class="p">,</span>
+            <span class="s1">&#39;color_gr&#39;</span><span class="p">:</span> <span class="n">color_gr</span><span class="p">,</span>
+            <span class="s1">&#39;color_rz&#39;</span><span class="p">:</span> <span class="n">color_rz</span><span class="p">,</span>
+            <span class="s1">&#39;mag_g&#39;</span><span class="p">:</span> <span class="n">mag_g</span><span class="p">,</span>
+            <span class="s1">&#39;mag_r&#39;</span><span class="p">:</span> <span class="n">mag_r</span><span class="p">,</span>
+            <span class="s1">&#39;calidad&#39;</span><span class="p">:</span> <span class="n">calidad</span><span class="p">,</span>
+            <span class="s1">&#39;metodo&#39;</span><span class="p">:</span> <span class="s1">&#39;colores_fotometricos&#39;</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.calcularDistanciaHubble">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.calcularDistanciaHubble">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcularDistanciaHubble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">H0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calcula la distancia usando la ley de Hubble a partir del redshift.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            z: Redshift</span>
+<span class="sd">            H0: Constante de Hubble (opcional, usa valor por defecto si no se proporciona)</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Diccionario con distancia en diferentes unidades y velocidad</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">H0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">H0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H0</span>
+        
+        <span class="c1"># Velocidad de recesión</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">*</span> <span class="n">z</span>  <span class="c1"># Aproximación para z pequeños</span>
+        
+        <span class="c1"># Distancia de Hubble</span>
+        <span class="n">d_Mpc</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">H0</span>
+        <span class="n">d_m</span> <span class="o">=</span> <span class="n">d_Mpc</span> <span class="o">*</span> <span class="mf">3.086e22</span>  <span class="c1"># Conversión a metros</span>
+        <span class="n">d_ly</span> <span class="o">=</span> <span class="n">d_Mpc</span> <span class="o">*</span> <span class="mf">3.262e6</span>  <span class="c1"># Conversión a años luz</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;redshift&quot;</span><span class="p">:</span> <span class="n">z</span><span class="p">,</span>
+            <span class="s2">&quot;velocidad_km_s&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span>
+            <span class="s2">&quot;distancia_Mpc&quot;</span><span class="p">:</span> <span class="n">d_Mpc</span><span class="p">,</span>
+            <span class="s2">&quot;distancia_metros&quot;</span><span class="p">:</span> <span class="n">d_m</span><span class="p">,</span>
+            <span class="s2">&quot;distancia_años_luz&quot;</span><span class="p">:</span> <span class="n">d_ly</span><span class="p">,</span>
+            <span class="s2">&quot;H0_usado&quot;</span><span class="p">:</span> <span class="n">H0</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.analizar_datos_csv">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.analizar_datos_csv">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analizar_datos_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                          <span class="n">fuente</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">calculos_aplicar</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Analiza un dataset CSV o DataFrame y aplica cálculos astronómicos.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            dataset_name: Nombre del dataset a analizar (sin extensión .csv)</span>
+<span class="sd">            df: DataFrame con los datos (alternativa a dataset_name)</span>
+<span class="sd">            fuente: Nombre de la fuente de datos (SDSS, DESI, NEO, NASA ESI)</span>
+<span class="sd">            calculos_aplicar: Lista de cálculos a aplicar [&#39;hubble&#39;, &#39;redshift&#39;, &#39;orbital&#39;]</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame con los datos originales y columnas calculadas adicionales</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Cargar datos desde archivo o usar DataFrame proporcionado</span>
+        <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">datos</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">nombre</span> <span class="o">=</span> <span class="n">fuente</span> <span class="k">if</span> <span class="n">fuente</span> <span class="k">else</span> <span class="s2">&quot;DataFrame proporcionado&quot;</span>
+        <span class="k">elif</span> <span class="n">dataset_name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dataset_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset &#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s2">&#39; no encontrado. Disponibles: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">datos</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">])</span>
+            <span class="n">nombre</span> <span class="o">=</span> <span class="n">dataset_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Debe proporcionar dataset_name o df&quot;</span><span class="p">)</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;📊 ANALIZANDO DATASET: </span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filas: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">datos</span><span class="p">)</span><span class="si">}</span><span class="s2">, Columnas: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">datos</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Columnas disponibles: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">datos</span><span class="o">.</span><span class="n">columns</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Detectar automáticamente qué cálculos aplicar</span>
+        <span class="k">if</span> <span class="n">calculos_aplicar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">calculos_aplicar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detectar_calculos</span><span class="p">(</span><span class="n">datos</span><span class="p">,</span> <span class="n">fuente</span> <span class="ow">or</span> <span class="n">nombre</span><span class="p">)</span>
+        
+        <span class="n">df_resultado</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">resultados_calculos</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;fuente&#39;</span><span class="p">:</span> <span class="n">nombre</span><span class="p">,</span>
+            <span class="s1">&#39;n_objetos&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">datos</span><span class="p">),</span>
+            <span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># CÁLCULOS PARA SDSS Y DESI (Redshift y distancias)</span>
+        <span class="k">if</span> <span class="s1">&#39;redshift&#39;</span> <span class="ow">in</span> <span class="n">calculos_aplicar</span> <span class="ow">and</span> <span class="s1">&#39;z&#39;</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🌌 Calculando distancias cosmológicas (Ley de Hubble)...&quot;</span><span class="p">)</span>
+            <span class="n">distancias_Mpc</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">distancias_ly</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">velocidades</span> <span class="o">=</span> <span class="p">[]</span>
+            
+            <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">datos</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="ow">and</span> <span class="n">z</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">dist_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calcularDistanciaHubble</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+                    <span class="n">distancias_Mpc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dist_info</span><span class="p">[</span><span class="s1">&#39;distancia_Mpc&#39;</span><span class="p">])</span>
+                    <span class="n">distancias_ly</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dist_info</span><span class="p">[</span><span class="s1">&#39;distancia_años_luz&#39;</span><span class="p">])</span>
+                    <span class="n">velocidades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dist_info</span><span class="p">[</span><span class="s1">&#39;velocidad_km_s&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">distancias_Mpc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                    <span class="n">distancias_ly</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                    <span class="n">velocidades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+            
+            <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;distancia_Mpc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">distancias_Mpc</span>
+            <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;distancia_años_luz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">distancias_ly</span>
+            <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;velocidad_recesion_km_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">velocidades</span>
+            
+            <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;distancia_hubble&#39;</span><span class="p">)</span>
+            <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;distancia_media_Mpc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">distancias_Mpc</span><span class="p">)</span>
+            <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;distancia_max_Mpc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">distancias_Mpc</span><span class="p">)</span>
+            <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;z_medio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datos</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Distancia media: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">distancias_Mpc</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Mpc&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Redshift medio: </span><span class="si">{</span><span class="n">datos</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Objetos procesados: </span><span class="si">{</span><span class="nb">len</span><span class="p">([</span><span class="n">d</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">distancias_Mpc</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">d</span><span class="p">)])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># 🆕 CÁLCULOS FOTOMÉTRICOS PARA DESI (Photo-z)</span>
+        <span class="k">if</span> <span class="s1">&#39;photoz&#39;</span> <span class="ow">in</span> <span class="n">calculos_aplicar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📸 Calculando redshift fotométrico (photo-z)...&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Verificar que tenemos las columnas necesarias</span>
+            <span class="k">if</span> <span class="s1">&#39;flux_g&#39;</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;flux_r&#39;</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">photo_zs</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">colores_gr</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">colores_rz</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">calidades</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">distancias_photoz</span> <span class="o">=</span> <span class="p">[]</span>
+                
+                <span class="n">tiene_flux_z</span> <span class="o">=</span> <span class="s1">&#39;flux_z&#39;</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">columns</span>
+                
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                    <span class="n">flux_g</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;flux_g&#39;</span><span class="p">)</span>
+                    <span class="n">flux_r</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;flux_r&#39;</span><span class="p">)</span>
+                    <span class="n">flux_z</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;flux_z&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">tiene_flux_z</span> <span class="k">else</span> <span class="kc">None</span>
+                    
+                    <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">flux_g</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">flux_r</span><span class="p">)</span> <span class="ow">and</span> <span class="n">flux_g</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">flux_r</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">photo_resultado</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calcularPhotoz</span><span class="p">(</span><span class="n">flux_g</span><span class="p">,</span> <span class="n">flux_r</span><span class="p">,</span> <span class="n">flux_z</span><span class="p">)</span>
+                        
+                        <span class="n">photo_z</span> <span class="o">=</span> <span class="n">photo_resultado</span><span class="p">[</span><span class="s1">&#39;photo_z&#39;</span><span class="p">]</span>
+                        <span class="n">photo_zs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">photo_z</span><span class="p">)</span>
+                        <span class="n">colores_gr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">photo_resultado</span><span class="p">[</span><span class="s1">&#39;color_gr&#39;</span><span class="p">])</span>
+                        <span class="n">colores_rz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">photo_resultado</span><span class="p">[</span><span class="s1">&#39;color_rz&#39;</span><span class="p">])</span>
+                        <span class="n">calidades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">photo_resultado</span><span class="p">[</span><span class="s1">&#39;calidad&#39;</span><span class="p">])</span>
+                        
+                        <span class="c1"># Calcular distancia con photo-z</span>
+                        <span class="k">if</span> <span class="n">photo_z</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">dist_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calcularDistanciaHubble</span><span class="p">(</span><span class="n">photo_z</span><span class="p">)</span>
+                            <span class="n">distancias_photoz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dist_info</span><span class="p">[</span><span class="s1">&#39;distancia_Mpc&#39;</span><span class="p">])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">distancias_photoz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">photo_zs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                        <span class="n">colores_gr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                        <span class="n">colores_rz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                        <span class="n">calidades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;sin_datos&#39;</span><span class="p">)</span>
+                        <span class="n">distancias_photoz</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                
+                <span class="c1"># Agregar columnas al DataFrame</span>
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;photo_z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">photo_zs</span>
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;color_g-r&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">colores_gr</span>
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;color_r-z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">colores_rz</span>
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;photo_z_calidad&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calidades</span>
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;distancia_photoz_Mpc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">distancias_photoz</span>
+                
+                <span class="c1"># Estadísticas</span>
+                <span class="n">photo_zs_validos</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">photo_zs</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="n">photo_zs_validos</span><span class="p">:</span>
+                    <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;photo_z&#39;</span><span class="p">)</span>
+                    <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;photo_z_medio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">photo_zs_validos</span><span class="p">)</span>
+                    <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;photo_z_min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">photo_zs_validos</span><span class="p">)</span>
+                    <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;photo_z_max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">photo_zs_validos</span><span class="p">)</span>
+                    <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;n_objetos_photoz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">photo_zs_validos</span><span class="p">)</span>
+                    
+                    <span class="c1"># Distribución de calidades</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+                    <span class="n">calidades_count</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">calidades</span> <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s1">&#39;sin_datos&#39;</span><span class="p">])</span>
+                    <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;calidades_photoz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">calidades_count</span><span class="p">)</span>
+                    
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Photo-z medio: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">photo_zs_validos</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Rango: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">photo_zs_validos</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">photo_zs_validos</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Objetos procesados: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">photo_zs_validos</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">datos</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Calidad: </span><span class="si">{</span><span class="n">calidades_count</span><span class="o">.</span><span class="n">most_common</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   ⚠️  No se pudieron calcular photo-z válidos&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   ⚠️  Faltan columnas flux_g y flux_r para calcular photo-z&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># CÁLCULOS PARA NEO (Órbitas de asteroides y cometas)</span>
+        <span class="k">if</span> <span class="s1">&#39;orbital&#39;</span> <span class="ow">in</span> <span class="n">calculos_aplicar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">☄️  Calculando parámetros orbitales (NEO)...&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Columnas típicas de NEO: q (perihelio AU), e (excentricidad), a (semi-eje mayor)</span>
+            <span class="k">if</span> <span class="s1">&#39;q&#39;</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;e&#39;</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">periodos</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">velocidades</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">afelios</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">semi_ejes</span> <span class="o">=</span> <span class="p">[]</span>
+                
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="c1"># Calcular semi-eje mayor: a = q / (1 - e)</span>
+                            <span class="n">q_au</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span>
+                            <span class="n">e</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">]</span>
+                            <span class="n">a_au</span> <span class="o">=</span> <span class="n">q_au</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">e</span><span class="p">)</span>
+                            <span class="n">a_m</span> <span class="o">=</span> <span class="n">a_au</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">AU</span>
+                            
+                            <span class="n">orbita</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calcularOrbita</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MASA_SOL</span><span class="p">,</span> <span class="n">a_m</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                            
+                            <span class="n">periodos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">orbita</span><span class="p">[</span><span class="s1">&#39;periodo_años&#39;</span><span class="p">])</span>
+                            <span class="n">velocidades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">orbita</span><span class="p">[</span><span class="s1">&#39;velocidad_orbital&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># km/s</span>
+                            <span class="n">afelios</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">orbita</span><span class="p">[</span><span class="s1">&#39;afelio&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">AU</span><span class="p">)</span>  <span class="c1"># AU</span>
+                            <span class="n">semi_ejes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a_au</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">periodos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                            <span class="n">velocidades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                            <span class="n">afelios</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                            <span class="n">semi_ejes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">periodos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                        <span class="n">velocidades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                        <span class="n">afelios</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                        <span class="n">semi_ejes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;periodo_orbital_años&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">periodos</span>
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;velocidad_orbital_km_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">velocidades</span>
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;afelio_AU&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">afelios</span>
+                <span class="n">df_resultado</span><span class="p">[</span><span class="s1">&#39;semi_eje_mayor_AU&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">semi_ejes</span>
+                
+                <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;orbital&#39;</span><span class="p">)</span>
+                <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;periodo_medio_años&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">periodos</span><span class="p">)</span>
+                <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;velocidad_media_km_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">velocidades</span><span class="p">)</span>
+                
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Período medio: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">periodos</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> años&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Velocidad media: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">velocidades</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> km/s&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Objetos procesados: </span><span class="si">{</span><span class="nb">len</span><span class="p">([</span><span class="n">p</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">periodos</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">p</span><span class="p">)])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># CÁLCULOS PARA NASA ESI (Exoplanetas)</span>
+        <span class="k">if</span> <span class="s1">&#39;exoplanet&#39;</span> <span class="ow">in</span> <span class="n">calculos_aplicar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">🪐 Calculando parámetros de exoplanetas...&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Columnas típicas: pl_orbper (periodo días), pl_bmasse (masa Tierra), st_teff (temp estelar)</span>
+            <span class="k">if</span> <span class="s1">&#39;pl_orbper&#39;</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="c1"># Aquí se pueden agregar cálculos específicos de exoplanetas</span>
+                <span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;exoplanet&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   ✓ Exoplanetas en dataset: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">datos</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Estadísticas generales</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">📈 ESTADÍSTICAS DEL ANÁLISIS:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Total de objetos: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_resultado</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Cálculos aplicados: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">])</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">resultados_calculos</span><span class="p">[</span><span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Ninguno&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;class&#39;</span> <span class="ow">in</span> <span class="n">datos</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">   📊 Distribución por clase:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">clase</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">datos</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;      • </span><span class="si">{</span><span class="n">clase</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Guardar resultado del último análisis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ultimo_analisis</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;dataframe&#39;</span><span class="p">:</span> <span class="n">df_resultado</span><span class="p">,</span>
+            <span class="s1">&#39;resultados&#39;</span><span class="p">:</span> <span class="n">resultados_calculos</span>
+        <span class="p">}</span>
+        
+        <span class="k">return</span> <span class="n">df_resultado</span></div>
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_detectar_calculos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">fuente</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Detecta automáticamente qué cálculos aplicar según las columnas disponibles.&quot;&quot;&quot;</span>
+        <span class="n">calculos</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Detectar datos de redshift espectroscópico (SDSS, DESI con z)</span>
+        <span class="k">if</span> <span class="s1">&#39;z&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">calculos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;redshift&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Detectar datos fotométricos para photo-z (DESI sin z)</span>
+        <span class="k">if</span> <span class="s1">&#39;flux_g&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;flux_r&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="c1"># Si no tiene redshift espectroscópico, usar photo-z</span>
+            <span class="k">if</span> <span class="s1">&#39;z&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="n">calculos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;photoz&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   🔍 Detectados flujos fotométricos → aplicando photo-z&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Detectar datos orbitales (NEO)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">]):</span>
+            <span class="n">calculos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;orbital&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Detectar datos de exoplanetas (NASA ESI)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;pl_orbper&#39;</span><span class="p">,</span> <span class="s1">&#39;pl_bmasse&#39;</span><span class="p">,</span> <span class="s1">&#39;pl_rade&#39;</span><span class="p">,</span> <span class="s1">&#39;st_teff&#39;</span><span class="p">]):</span>
+            <span class="n">calculos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;exoplanet&#39;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">calculos</span>
+    
+<div class="viewcode-block" id="Calculos.obtener_ultimo_analisis">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.obtener_ultimo_analisis">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">obtener_ultimo_analisis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retorna el resultado del último análisis realizado.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ultimo_analisis</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.listar_datasets">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.listar_datasets">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listar_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retorna la lista de datasets disponibles.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.obtener_info_dataset">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.obtener_info_dataset">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">obtener_info_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtiene información básica de un dataset sin cargarlo completamente.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            dataset_name: Nombre del dataset</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Diccionario con información del dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dataset_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset &#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s2">&#39; no encontrado&quot;</span><span class="p">)</span>
+        
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">],</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;nombre&quot;</span><span class="p">:</span> <span class="n">dataset_name</span><span class="p">,</span>
+            <span class="s2">&quot;ruta&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]),</span>
+            <span class="s2">&quot;columnas&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
+            <span class="s2">&quot;num_columnas&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="Calculos.generar_reporte">
+<a class="viewcode-back" href="../../source/modules/Calculations.html#Calculations.calculos.Calculos.generar_reporte">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generar_reporte</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Genera un reporte textual del último análisis.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ultimo_analisis</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;No hay análisis disponible&quot;</span>
+        
+        <span class="n">resultado</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ultimo_analisis</span><span class="p">[</span><span class="s1">&#39;resultados&#39;</span><span class="p">]</span>
+        
+        <span class="n">reporte</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span>
+<span class="s2">📊 REPORTE DE ANÁLISIS ASTRONÓMICO</span>
+<span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span>
+
+<span class="s2">Fuente: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;fuente&#39;</span><span class="p">]</span><span class="si">}</span>
+<span class="s2">Objetos analizados: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;n_objetos&#39;</span><span class="p">]</span><span class="si">}</span>
+<span class="s2">Cálculos aplicados: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">])</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;calculos_aplicados&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Ninguno&#39;</span><span class="si">}</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;distancia_media_Mpc&#39;</span> <span class="ow">in</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="n">reporte</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">🌌 RESULTADOS COSMOLÓGICOS (Redshift Espectroscópico):</span>
+<span class="s2">   • Distancia media: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;distancia_media_Mpc&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Mpc</span>
+<span class="s2">   • Distancia máxima: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;distancia_max_Mpc&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Mpc</span>
+<span class="s2">   • Redshift medio: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;z_medio&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;photo_z_medio&#39;</span> <span class="ow">in</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="n">reporte</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">📸 RESULTADOS FOTOMÉTRICOS (Photo-z):</span>
+<span class="s2">   • Photo-z medio: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;photo_z_medio&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span>
+<span class="s2">   • Rango photo-z: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;photo_z_min&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;photo_z_max&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span>
+<span class="s2">   • Objetos con photo-z: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;n_objetos_photoz&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;n_objetos&#39;</span><span class="p">]</span><span class="si">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="s1">&#39;calidades_photoz&#39;</span> <span class="ow">in</span> <span class="n">resultado</span><span class="p">:</span>
+                <span class="n">reporte</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;   • Calidad de estimaciones:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="k">for</span> <span class="n">calidad</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;calidades_photoz&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">reporte</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;      - </span><span class="si">{</span><span class="n">calidad</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> objetos</span><span class="se">\n</span><span class="s2">&quot;</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;periodo_medio_años&#39;</span> <span class="ow">in</span> <span class="n">resultado</span><span class="p">:</span>
+            <span class="n">reporte</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">☄️  RESULTADOS ORBITALES:</span>
+<span class="s2">   • Período medio: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;periodo_medio_años&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> años</span>
+<span class="s2">   • Velocidad media: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">&#39;velocidad_media_km_s&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> km/s</span>
+<span class="s2">&quot;&quot;&quot;</span>
+        
+        <span class="n">reporte</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">60</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        
+        <span class="k">return</span> <span class="n">reporte</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navegación</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="Índice General"
+             >índice</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Índice de Módulos Python"
+             >módulos</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">documentación de Quipu-Skyfree - 21/11/2025</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Código de módulo</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Calculations.calculos</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2025, Maria Alejandra Moreno, Juan Sebastian Sanchez, Jose Luis Zamora..
+      Creado usando <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
