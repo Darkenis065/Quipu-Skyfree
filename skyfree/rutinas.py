@@ -292,8 +292,8 @@ class Rutina:
 
         # Mapeo de opciones del menú a palabras clave internas del módulo Calculos
         calculos_keyword_map = {
-            "Calcular órbitas": "orbital",
-            "Calcular velocidades": "exoplanet", # Asignación temporal
+            "Calcular órbitas": "exoplanet",
+            "Calcular velocidades": "exoplanet",
             "Calcular distancia de Hubble": "redshift",
             "Calcular constante de Hubble": "redshift"
         }
