@@ -292,7 +292,6 @@ class Rutina:
 
         # Mapeo de opciones del menú a palabras clave internas del módulo Calculos
         calculos_keyword_map = {
-            "Calcular órbitas": "exoplanet",
             "Calcular velocidades": "exoplanet",
             "Calcular distancia de Hubble": "redshift",
             "Calcular constante de Hubble": "redshift"
@@ -323,8 +322,17 @@ class Rutina:
                 seleccion = int(seleccion)
                 if 0 < seleccion <= len(opciones):
                     calculo_seleccionado_texto = opciones[seleccion - 1]
-                    # Traducir la opción del menú a la palabra clave interna
-                    calculo_keyword = calculos_keyword_map.get(calculo_seleccionado_texto)
+
+                    # Lógica sensible al contexto para la selección de cálculos
+                    calculo_keyword = None
+                    if calculo_seleccionado_texto == "Calcular órbitas":
+                        if self.fuente_actual == "NEO":
+                            calculo_keyword = "orbital"
+                        elif self.fuente_actual == "NASA ESI":
+                            calculo_keyword = "exoplanet"
+                    else:
+                        # Usar el mapa para otras opciones
+                        calculo_keyword = calculos_keyword_map.get(calculo_seleccionado_texto)
 
                     if not calculo_keyword:
                         print(f"❌ Error: No hay una acción definida para '{calculo_seleccionado_texto}'")
