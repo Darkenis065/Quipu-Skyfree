@@ -290,6 +290,14 @@ class Rutina:
             "local": []
         }
 
+        # Mapeo de opciones del menú a palabras clave internas del módulo Calculos
+        calculos_keyword_map = {
+            "Calcular órbitas": "orbital",
+            "Calcular velocidades": "exoplanet", # Asignación temporal
+            "Calcular distancia de Hubble": "redshift",
+            "Calcular constante de Hubble": "redshift"
+        }
+
         fuente = self.fuente_actual
         if fuente not in calculos_disponibles:
             print("No hay cálculos disponibles para esta fuente de datos.")
@@ -314,9 +322,16 @@ class Rutina:
             try:
                 seleccion = int(seleccion)
                 if 0 < seleccion <= len(opciones):
-                    calculo_seleccionado = opciones[seleccion - 1]
-                    print(f"\nEjecutando '{calculo_seleccionado}'...")
-                    if self.aplicarCalculos(calculos_aplicar=[calculo_seleccionado]):
+                    calculo_seleccionado_texto = opciones[seleccion - 1]
+                    # Traducir la opción del menú a la palabra clave interna
+                    calculo_keyword = calculos_keyword_map.get(calculo_seleccionado_texto)
+
+                    if not calculo_keyword:
+                        print(f"❌ Error: No hay una acción definida para '{calculo_seleccionado_texto}'")
+                        continue
+
+                    print(f"\nEjecutando '{calculo_seleccionado_texto}'...")
+                    if self.aplicarCalculos(calculos_aplicar=[calculo_keyword]):
                         self.verReporte()
                         guardar = input("\n💾 ¿Guardar resultados con cálculos? (s/n): ").lower()
                         if guardar == 's':
