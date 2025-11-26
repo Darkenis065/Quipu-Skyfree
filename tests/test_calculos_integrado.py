@@ -150,7 +150,7 @@ def test_analisis_dataframe_sdss():
     
     # Verificar resultados
     print("\n📈 Verificando resultados...")
-    columnas_esperadas = ['distancia_Mpc', 'distancia_años_luz', 'velocidad_recesion_km_s']
+    columnas_esperadas = ['distancia_Mpc', 'distancia_años_luz', 'velocidad_recesion_km_s', 'H0_usado']
     for col in columnas_esperadas:
         assert col in df_resultado.columns, f"Columna {col} no encontrada"
         print(f"   ✓ {col}: OK")

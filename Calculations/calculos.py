@@ -315,6 +315,7 @@ class Calculos:
                 distancias_Mpc = []
                 distancias_ly = []
                 velocidades = []
+                h0_usado = []
 
                 for z_val in datos[columna_z]:
                     if pd.notna(z_val) and z_val > 0:
@@ -322,14 +323,17 @@ class Calculos:
                         distancias_Mpc.append(dist_info['distancia_Mpc'])
                         distancias_ly.append(dist_info['distancia_años_luz'])
                         velocidades.append(dist_info['velocidad_km_s'])
+                        h0_usado.append(dist_info['H0_usado'])
                     else:
                         distancias_Mpc.append(np.nan)
                         distancias_ly.append(np.nan)
                         velocidades.append(np.nan)
+                        h0_usado.append(np.nan)
 
                 df_resultado['distancia_Mpc'] = distancias_Mpc
                 df_resultado['distancia_años_luz'] = distancias_ly
                 df_resultado['velocidad_recesion_km_s'] = velocidades
+                df_resultado['H0_usado'] = h0_usado
 
                 resultados_calculos['calculos_aplicados'].append('distancia_hubble')
                 resultados_calculos['distancia_media_Mpc'] = np.nanmean(distancias_Mpc)
