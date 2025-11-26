@@ -7,9 +7,9 @@ matplotlib.use('Agg')
 from ML.Cluster import AnalisisDatos
 
 @pytest.fixture
-def analisis_datos():
+def analisis_datos(mock_rutina):
     """Fixture to create an instance of AnalisisDatos."""
-    return AnalisisDatos()
+    return AnalisisDatos(mock_rutina)
 
 @pytest.fixture
 def mock_rutina():

@@ -6,25 +6,23 @@ import numpy as np
 import os
 import sys
 
-# Agregar el directorio padre al path para importar Rutina
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Routines.rutinas import Rutina
+from skyfree.rutinas import Rutina
 
 class AnalisisDatos:
     """
     Clase para manejar la carga de datos a través del módulo de rutinas,
     aplicar K-Means clustering y visualizar los resultados.
     """
-    def __init__(self):
+    def __init__(self, rutina: Rutina):
         """
-        Inicializa la clase sin una ruta de archivo fija.
+        Inicializa la clase con una instancia de Rutina.
         """
         self.df = None
         self.columnas_disponibles = []
         self.X_scaled = None
         self.labels = None
         self.columnas_elegidas = []
-        self.rutina = Rutina()
+        self.rutina = rutina
 
     def cargar_datos(self):
         """

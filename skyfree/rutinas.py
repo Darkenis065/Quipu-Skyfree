@@ -20,13 +20,13 @@ class Rutina:
     cálculos científicos y generación de salidas educativas.
     """
     
-    def __init__(self):
+    def __init__(self, data_path: str = "data"):
         """Inicializa los componentes del sistema."""
         self.entrada = Entrada()
         self.base_datos = BaseDatos()
-        self.calculos = Calculos(data_path="routines/data")  # 🆕 Integración de Calculos
+        self.calculos = Calculos(data_path=data_path)
         self.datos_actuales = None
-        self.datos_procesados = None  # 🆕 Para guardar datos con cálculos
+        self.datos_procesados = None
         self.fuente_actual = None
         self.metadatos = {}
     
@@ -168,6 +168,7 @@ class Rutina:
                 for col in columnas_nuevas:
                     print(f"   • {col}")
             
+            self.datos_actuales = self.datos_procesados
             return True
             
         except Exception as e:
@@ -182,7 +183,7 @@ class Rutina:
         print(reporte)
     
     def listarDatasetsDisponibles(self):
-        """🆕 Lista los datasets disponibles en routines/data."""
+        """🆕 Lista los datasets disponibles en la carpeta de datos."""
         print("\n" + "="*60)
         print("📚 DATASETS DISPONIBLES")
         print("="*60)
@@ -190,7 +191,7 @@ class Rutina:
         datasets = self.calculos.listar_datasets()
         
         if not datasets:
-            print("⚠️  No hay datasets en la carpeta 'routines/data'")
+            print(f"⚠️  No hay datasets en la carpeta '{self.calculos.data_path}'")
             print("   Carga datos desde las opciones 2-5 para crear datasets")
             return
         
@@ -349,7 +350,7 @@ class Rutina:
                 print("\n--- Lanzando Módulo de Machine Learning ---")
                 try:
                     from ML.MachineL import MenuML
-                    menu_ml = MenuML()
+                    menu_ml = MenuML(rutina=self)
                     menu_ml.mostrar_menu()
                 except Exception as e:
                     print(f"ERROR al ejecutar el módulo de Machine Learning: {e}")

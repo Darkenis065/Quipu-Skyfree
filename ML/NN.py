@@ -10,17 +10,15 @@ import os
 import time
 import sys
 
-# Agregar el directorio padre al path para importar Rutina
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Routines.rutinas import Rutina
+from skyfree.rutinas import Rutina
 
 class AnalisisRegresionNN:
     """
     Clase para manejar la carga de datos, aplicar Regresión con Red Neuronal (TensorFlow/Keras)
     y visualizar el ajuste, permitiendo la configuración de hiperparámetros.
     """
-    def __init__(self, modelo_filepath="best_nn_model.keras"):
-        """Inicializa la clase con rutas y variables de estado."""
+    def __init__(self, rutina: Rutina, modelo_filepath="best_nn_model.keras"):
+        """Inicializa la clase con una instancia de Rutina y rutas."""
         self.modelo_filepath = modelo_filepath
         self.df = None
         self.columnas_disponibles = []
@@ -29,7 +27,7 @@ class AnalisisRegresionNN:
         self.feature_name, self.target_name = None, None
         self.model = None
         self.history = None
-        self.rutina = Rutina()
+        self.rutina = rutina
         # Los escaladores son cruciales para desescalar al graficar
         self.scaler_X = StandardScaler()
         self.scaler_y = StandardScaler() 

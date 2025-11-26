@@ -5,6 +5,9 @@ class MenuML:
     """
     Una clase para mostrar un menú y lanzar los módulos de Machine Learning.
     """
+    def __init__(self, rutina):
+        self.rutina = rutina
+
     def mostrar_menu(self):
         """
         Muestra el menú principal de Machine Learning y maneja la selección del usuario.

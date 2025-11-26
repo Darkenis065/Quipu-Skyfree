@@ -110,7 +110,7 @@ dependencies = [
 # ===============================================
 [project.scripts]
 # Comando para el script de rutinas
-QSkyfree = "Routines.rutinas:main"
+QSkyfree = "skyfree.rutinas:main"
 
 # Comando para la app Streamlit
 QSkyfree-GUI = "streamlit_wrapper:run_streamlit_app"

@@ -19,7 +19,7 @@ class Calculos:
     AU = 1.496e11  # Unidad astronómica en metros
     MASA_SOL = 1.989e30  # Masa del Sol en kg
     
-    def __init__(self, data_path: str = "routines/data"):
+    def __init__(self, data_path: str = "data"):
         """
         Inicializa la clase con la ruta a los datos.
         

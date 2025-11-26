@@ -7,9 +7,9 @@ matplotlib.use('Agg')
 from ML.NN import AnalisisRegresionNN
 
 @pytest.fixture
-def analisis_regresion_nn():
+def analisis_regresion_nn(mock_rutina_nn):
     """Fixture to create an instance of AnalisisRegresionNN."""
-    return AnalisisRegresionNN()
+    return AnalisisRegresionNN(mock_rutina_nn)
 
 @pytest.fixture
 def mock_rutina_nn():

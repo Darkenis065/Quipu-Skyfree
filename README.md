@@ -22,11 +22,11 @@ Quipu-Skyfree es un software de análisis de datos astronómicos diseñado con f
 
 ## Estructura del Proyecto
 
+- `skyfree/`: Contiene la lógica principal de la aplicación.
 - `Calculations/`: Contiene la lógica para los cálculos astronómicos.
 - `DB/`: Gestiona la conexión y consulta a las bases de datos astronómicas.
 - `ML/`: Implementa los algoritmos de machine learning.
-- `Routines/`: Orquesta el flujo de la aplicación y contiene el menú principal.
-- `routines/data/`: Directorio donde se guardan los datasets descargados.
+- `data/`: Directorio donde se guardan los datasets descargados.
 
 ## Instalación
 
@@ -36,7 +36,7 @@ Quipu-Skyfree es un software de análisis de datos astronómicos diseñado con f
    ```
 2. Instala las dependencias:
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 ## Uso
@@ -44,7 +44,7 @@ Quipu-Skyfree es un software de análisis de datos astronómicos diseñado con f
 Para iniciar la aplicación, ejecuta el siguiente comando desde el directorio raíz del proyecto:
 
 ```bash
-python Routines/rutinas.py
+QSkyfree
 ```
 
 Esto iniciará el menú interactivo en la línea de comandos, donde podrás seleccionar la fuente de datos, realizar cálculos y aplicar análisis de machine learning.
