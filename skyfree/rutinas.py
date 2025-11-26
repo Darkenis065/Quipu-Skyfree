@@ -3,9 +3,6 @@ from typing import Optional, Dict, List
 import sys
 import os
 
-# Agregar el directorio padre al path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 # Importar desde la carpeta DB
 from DB.entrada import Entrada
 from DB.BaseDatos import BaseDatos
