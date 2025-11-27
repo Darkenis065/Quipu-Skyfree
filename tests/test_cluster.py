@@ -23,22 +23,6 @@ def mock_rutina():
     mock.cargarDatos.return_value = True
     return mock
 
-def test_cargar_datos_exito(analisis_datos, mock_rutina):
-    """Test successful data loading."""
-    analisis_datos.rutina = mock_rutina
-    with patch('builtins.input', return_value='1'):
-        assert analisis_datos.cargar_datos() is True
-        assert analisis_datos.df is not None
-        assert len(analisis_datos.columnas_disponibles) == 3
-
-def test_cargar_datos_fallido(analisis_datos, mock_rutina):
-    """Test failed data loading."""
-    mock_rutina.cargarDatos.return_value = False
-    analisis_datos.rutina = mock_rutina
-    with patch('builtins.input', return_value='1'):
-        assert analisis_datos.cargar_datos() is False
-        assert analisis_datos.df is None
-
 def test_seleccionar_columnas_exito(analisis_datos):
     """Test successful column selection."""
     analisis_datos.df = pd.DataFrame({

@@ -370,7 +370,7 @@ class Rutina:
                 print("\n--- Lanzando Módulo de Machine Learning ---")
                 try:
                     from ML.MachineL import MenuML
-                    menu_ml = MenuML()
+                    menu_ml = MenuML(self)
                     menu_ml.mostrar_menu()
                 except Exception as e:
                     print(f"ERROR al ejecutar el módulo de Machine Learning: {e}")
