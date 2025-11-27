@@ -17,45 +17,20 @@ class AnalisisDatos:
         """
         Inicializa la clase con una instancia de Rutina.
         """
-        self.df = None
+        self.rutina = rutina
+        self.df = self.rutina.datos_actuales
         self.columnas_disponibles = []
+        if self.df is not None:
+            self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
         self.X_scaled = None
         self.labels = None
         self.columnas_elegidas = []
-        self.rutina = rutina
-
-    def cargar_datos(self):
-        """
-        Utiliza el módulo de rutinas para cargar datos desde diversas fuentes.
-        """
-        self.rutina.menuPrincipal()
-        try:
-            opcion = int(input("\nSeleccione una opción de fuente de datos (0-5): "))
-            if opcion == 0:
-                return False
-
-            exito = self.rutina.cargarDatos(opcion)
-
-            if exito:
-                self.df = self.rutina.datos_actuales
-                self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
-                print("\nDatos cargados exitosamente a través de Rutinas.")
-                print(f"Columnas numéricas disponibles: {len(self.columnas_disponibles)}")
-                print("\nPrimeras 5 filas de los datos:")
-                print(self.df.head())
-                return True
-            else:
-                print("No se pudieron cargar los datos desde la fuente seleccionada.")
-                return False
-        except (ValueError, KeyboardInterrupt):
-            print("\nOperación cancelada o entrada no válida.")
-            return False
 
     def seleccionar_columnas(self):
         """
         Permite al usuario seleccionar dos columnas (Y y X) por su índice numérico.
         """
-        if not self.df.empty and self.columnas_disponibles:
+        if self.df is not None and not self.df.empty and self.columnas_disponibles:
             print("\nColumnas numéricas disponibles para selección:")
             for i, col in enumerate(self.columnas_disponibles):
                 print(f"  {i+1}. {col}")
@@ -192,8 +167,8 @@ class AnalisisDatos:
         """
         Menú principal para interactuar con las funciones de análisis de datos.
         """
-        if not self.cargar_datos():
-            print("No se puede iniciar el menú sin cargar datos exitosamente.")
+        if self.df is None:
+            print("No hay datos cargados para analizar.")
             return
 
         while True:

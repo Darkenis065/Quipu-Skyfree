@@ -23,14 +23,6 @@ def mock_rutina_nn():
     mock.cargarDatos.return_value = True
     return mock
 
-def test_cargar_datos_nn_exito(analisis_regresion_nn, mock_rutina_nn):
-    """Test successful data loading for NN."""
-    analisis_regresion_nn.rutina = mock_rutina_nn
-    with patch('builtins.input', return_value='1'):
-        assert analisis_regresion_nn.cargar_datos() is True
-        assert analisis_regresion_nn.df is not None
-        assert len(analisis_regresion_nn.columnas_disponibles) == 3
-
 def test_seleccionar_y_preparar_datos_exito(analisis_regresion_nn):
     """Test successful data preparation for NN."""
     analisis_regresion_nn.df = pd.DataFrame({
