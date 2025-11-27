@@ -35,8 +35,9 @@ Quipu-Skyfree es un software de análisis de datos astronómicos diseñado con f
    git clone https://github.com/tu_usuario/Quipu-Skyfree.git
    ```
 2. Instala las dependencias:
+   En un entorno de python ejecuta:
    ```bash
-   pip install -e .
+   pip install -r requirements.txt.
    ```
 
 ## Uso
