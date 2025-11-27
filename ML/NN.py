@@ -10,55 +10,30 @@ import os
 import time
 import sys
 
-# Agregar el directorio padre al path para importar Rutina
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Routines.rutinas import Rutina
+from skyfree.rutinas import Rutina
 
 class AnalisisRegresionNN:
     """
     Clase para manejar la carga de datos, aplicar Regresión con Red Neuronal (TensorFlow/Keras)
     y visualizar el ajuste, permitiendo la configuración de hiperparámetros.
     """
-    def __init__(self, modelo_filepath="best_nn_model.keras"):
-        """Inicializa la clase con rutas y variables de estado."""
+    def __init__(self, rutina: Rutina, modelo_filepath="best_nn_model.keras"):
+        """Inicializa la clase con una instancia de Rutina y rutas."""
         self.modelo_filepath = modelo_filepath
-        self.df = None
+        self.rutina = rutina
+        self.df = self.rutina.datos_actuales
         self.columnas_disponibles = []
+        if self.df is not None:
+            self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
         self.X, self.y = None, None
         self.X_train, self.X_val, self.y_train, self.y_val = (None,)*4
         self.feature_name, self.target_name = None, None
         self.model = None
         self.history = None
-        self.rutina = Rutina()
         # Los escaladores son cruciales para desescalar al graficar
         self.scaler_X = StandardScaler()
         self.scaler_y = StandardScaler() 
         self.hiperparametros = {} # Almacena los hiperparámetros del último entrenamiento
-
-    def cargar_datos(self):
-        """Utiliza el módulo de rutinas para cargar datos desde diversas fuentes."""
-        self.rutina.menuPrincipal()
-        try:
-            opcion = int(input("\nSeleccione una opción de fuente de datos (0-5): "))
-            if opcion == 0:
-                return False
-            
-            exito = self.rutina.cargarDatos(opcion)
-
-            if exito:
-                self.df = self.rutina.datos_actuales
-                self.columnas_disponibles = self.df.select_dtypes(include=np.number).columns.tolist()
-                if len(self.columnas_disponibles) < 2:
-                    raise ValueError("Los datos cargados deben tener al menos dos columnas numéricas.")
-
-                print("\nDatos cargados exitosamente a través de Rutinas.")
-                return True
-            else:
-                print("No se pudieron cargar los datos desde la fuente seleccionada.")
-                return False
-        except (ValueError, IndexError, KeyboardInterrupt) as e:
-            print(f"\nOperación cancelada o error: {e}")
-            return False
 
     def seleccionar_y_preparar_datos(self):
         """Permite al usuario seleccionar X e Y, escala los datos y divide en train/val."""
@@ -274,7 +249,8 @@ class AnalisisRegresionNN:
 
     def menu(self):
         """Menú principal para interactuar con las funciones de la red neuronal."""
-        if not self.cargar_datos():
+        if self.df is None:
+            print("No hay datos cargados para analizar.")
             return
 
         while True:

@@ -3,9 +3,6 @@ from typing import Optional, Dict, List
 import sys
 import os
 
-# Agregar el directorio padre al path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 # Importar desde la carpeta DB
 from DB.entrada import Entrada
 from DB.BaseDatos import BaseDatos
@@ -20,13 +17,13 @@ class Rutina:
     cálculos científicos y generación de salidas educativas.
     """
     
-    def __init__(self):
+    def __init__(self, data_path: str = "data"):
         """Inicializa los componentes del sistema."""
         self.entrada = Entrada()
         self.base_datos = BaseDatos()
-        self.calculos = Calculos(data_path="routines/data")  # 🆕 Integración de Calculos
+        self.calculos = Calculos(data_path=data_path)
         self.datos_actuales = None
-        self.datos_procesados = None  # 🆕 Para guardar datos con cálculos
+        self.datos_procesados = None
         self.fuente_actual = None
         self.metadatos = {}
     
@@ -168,6 +165,7 @@ class Rutina:
                 for col in columnas_nuevas:
                     print(f"   • {col}")
             
+            self.datos_actuales = self.datos_procesados
             return True
             
         except Exception as e:
@@ -182,7 +180,7 @@ class Rutina:
         print(reporte)
     
     def listarDatasetsDisponibles(self):
-        """🆕 Lista los datasets disponibles en routines/data."""
+        """🆕 Lista los datasets disponibles en la carpeta de datos."""
         print("\n" + "="*60)
         print("📚 DATASETS DISPONIBLES")
         print("="*60)
@@ -190,7 +188,7 @@ class Rutina:
         datasets = self.calculos.listar_datasets()
         
         if not datasets:
-            print("⚠️  No hay datasets en la carpeta 'routines/data'")
+            print(f"⚠️  No hay datasets en la carpeta '{self.calculos.data_path}'")
             print("   Carga datos desde las opciones 2-5 para crear datasets")
             return
         
@@ -289,6 +287,13 @@ class Rutina:
             "local": []
         }
 
+        # Mapeo de opciones del menú a palabras clave internas del módulo Calculos
+        calculos_keyword_map = {
+            "Calcular velocidades": "exoplanet",
+            "Calcular distancia de Hubble": "redshift",
+            "Calcular constante de Hubble": "redshift"
+        }
+
         fuente = self.fuente_actual
         if fuente not in calculos_disponibles:
             print("No hay cálculos disponibles para esta fuente de datos.")
@@ -313,9 +318,25 @@ class Rutina:
             try:
                 seleccion = int(seleccion)
                 if 0 < seleccion <= len(opciones):
-                    calculo_seleccionado = opciones[seleccion - 1]
-                    print(f"\nEjecutando '{calculo_seleccionado}'...")
-                    if self.aplicarCalculos(calculos_aplicar=[calculo_seleccionado]):
+                    calculo_seleccionado_texto = opciones[seleccion - 1]
+
+                    # Lógica sensible al contexto para la selección de cálculos
+                    calculo_keyword = None
+                    if calculo_seleccionado_texto == "Calcular órbitas":
+                        if self.fuente_actual == "NEO":
+                            calculo_keyword = "orbital"
+                        elif self.fuente_actual == "NASA ESI":
+                            calculo_keyword = "exoplanet"
+                    else:
+                        # Usar el mapa para otras opciones
+                        calculo_keyword = calculos_keyword_map.get(calculo_seleccionado_texto)
+
+                    if not calculo_keyword:
+                        print(f"❌ Error: No hay una acción definida para '{calculo_seleccionado_texto}'")
+                        continue
+
+                    print(f"\nEjecutando '{calculo_seleccionado_texto}'...")
+                    if self.aplicarCalculos(calculos_aplicar=[calculo_keyword]):
                         self.verReporte()
                         guardar = input("\n💾 ¿Guardar resultados con cálculos? (s/n): ").lower()
                         if guardar == 's':
@@ -349,7 +370,7 @@ class Rutina:
                 print("\n--- Lanzando Módulo de Machine Learning ---")
                 try:
                     from ML.MachineL import MenuML
-                    menu_ml = MenuML()
+                    menu_ml = MenuML(self)
                     menu_ml.mostrar_menu()
                 except Exception as e:
                     print(f"ERROR al ejecutar el módulo de Machine Learning: {e}")

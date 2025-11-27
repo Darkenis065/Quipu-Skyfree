@@ -19,7 +19,7 @@ class Calculos:
     AU = 1.496e11  # Unidad astronómica en metros
     MASA_SOL = 1.989e30  # Masa del Sol en kg
     
-    def __init__(self, data_path: str = "routines/data"):
+    def __init__(self, data_path: str = "data"):
         """
         Inicializa la clase con la ruta a los datos.
         
@@ -299,35 +299,50 @@ class Calculos:
         }
         
         # CÁLCULOS PARA SDSS Y DESI (Redshift y distancias)
-        if 'redshift' in calculos_aplicar and 'z' in datos.columns:
-            print("\n🌌 Calculando distancias cosmológicas (Ley de Hubble)...")
-            distancias_Mpc = []
-            distancias_ly = []
-            velocidades = []
-            
-            for z in datos['z']:
-                if pd.notna(z) and z > 0:
-                    dist_info = self.calcularDistanciaHubble(z)
-                    distancias_Mpc.append(dist_info['distancia_Mpc'])
-                    distancias_ly.append(dist_info['distancia_años_luz'])
-                    velocidades.append(dist_info['velocidad_km_s'])
-                else:
-                    distancias_Mpc.append(np.nan)
-                    distancias_ly.append(np.nan)
-                    velocidades.append(np.nan)
-            
-            df_resultado['distancia_Mpc'] = distancias_Mpc
-            df_resultado['distancia_años_luz'] = distancias_ly
-            df_resultado['velocidad_recesion_km_s'] = velocidades
-            
-            resultados_calculos['calculos_aplicados'].append('distancia_hubble')
-            resultados_calculos['distancia_media_Mpc'] = np.nanmean(distancias_Mpc)
-            resultados_calculos['distancia_max_Mpc'] = np.nanmax(distancias_Mpc)
-            resultados_calculos['z_medio'] = datos['z'].mean()
-            
-            print(f"   ✓ Distancia media: {np.nanmean(distancias_Mpc):.2f} Mpc")
-            print(f"   ✓ Redshift medio: {datos['z'].mean():.4f}")
-            print(f"   ✓ Objetos procesados: {len([d for d in distancias_Mpc if not np.isnan(d)])}")
+        if 'redshift' in calculos_aplicar:
+            # Determinar qué columna de redshift usar: 'z' (espectroscópico) o 'photo_z' (fotométrico)
+            columna_z = None
+            if 'z' in datos.columns and datos['z'].notna().any():
+                columna_z = 'z'
+                print("\n🌌 Calculando distancias cosmológicas (Ley de Hubble) usando Redshift Espectroscópico ('z')...")
+            elif 'photo_z' in datos.columns and datos['photo_z'].notna().any():
+                columna_z = 'photo_z'
+                print("\n🌌 Calculando distancias cosmológicas (Ley de Hubble) usando Redshift Fotométrico ('photo_z')...")
+            else:
+                print("\n⚠️  No se encontró una columna de redshift ('z' o 'photo_z') válida para calcular la distancia.")
+
+            if columna_z:
+                distancias_Mpc = []
+                distancias_ly = []
+                velocidades = []
+                h0_usado = []
+
+                for z_val in datos[columna_z]:
+                    if pd.notna(z_val) and z_val > 0:
+                        dist_info = self.calcularDistanciaHubble(z_val)
+                        distancias_Mpc.append(dist_info['distancia_Mpc'])
+                        distancias_ly.append(dist_info['distancia_años_luz'])
+                        velocidades.append(dist_info['velocidad_km_s'])
+                        h0_usado.append(dist_info['H0_usado'])
+                    else:
+                        distancias_Mpc.append(np.nan)
+                        distancias_ly.append(np.nan)
+                        velocidades.append(np.nan)
+                        h0_usado.append(np.nan)
+
+                df_resultado['distancia_Mpc'] = distancias_Mpc
+                df_resultado['distancia_años_luz'] = distancias_ly
+                df_resultado['velocidad_recesion_km_s'] = velocidades
+                df_resultado['H0_usado'] = h0_usado
+
+                resultados_calculos['calculos_aplicados'].append('distancia_hubble')
+                resultados_calculos['distancia_media_Mpc'] = np.nanmean(distancias_Mpc)
+                resultados_calculos['distancia_max_Mpc'] = np.nanmax(distancias_Mpc)
+                resultados_calculos['z_medio'] = datos[columna_z].mean()
+
+                print(f"   ✓ Distancia media: {np.nanmean(distancias_Mpc):.2f} Mpc")
+                print(f"   ✓ Redshift medio ({columna_z}): {datos[columna_z].mean():.4f}")
+                print(f"   ✓ Objetos procesados: {len([d for d in distancias_Mpc if not np.isnan(d)])}")
         
         # 🆕 CÁLCULOS FOTOMÉTRICOS PARA DESI (Photo-z)
         if 'photoz' in calculos_aplicar:
@@ -452,13 +467,52 @@ class Calculos:
         
         # CÁLCULOS PARA NASA ESI (Exoplanetas)
         if 'exoplanet' in calculos_aplicar:
-            print("\n🪐 Calculando parámetros de exoplanetas...")
+            print("\n🪐 Calculando parámetros orbitales de exoplanetas...")
             
-            # Columnas típicas: pl_orbper (periodo días), pl_bmasse (masa Tierra), st_teff (temp estelar)
+            # Columnas requeridas: pl_orbper (periodo orbital en días)
             if 'pl_orbper' in datos.columns:
-                # Aquí se pueden agregar cálculos específicos de exoplanetas
-                resultados_calculos['calculos_aplicados'].append('exoplanet')
-                print(f"   ✓ Exoplanetas en dataset: {len(datos)}")
+                velocidades_orbitales = []
+                semi_ejes_mayores = []
+
+                for periodo_dias in datos['pl_orbper']:
+                    if pd.notna(periodo_dias) and periodo_dias > 0:
+                        try:
+                            # Convertir periodo a segundos
+                            periodo_seg = periodo_dias * 86400
+                            # Asumir masa estelar igual a la del Sol para simplificar
+                            masa_central_kg = self.MASA_SOL
+
+                            # Tercera Ley de Kepler para el semieje mayor (a)
+                            # a^3 = (G * M * T^2) / (4 * pi^2)
+                            a_m = (self.G * masa_central_kg * periodo_seg**2 / (4 * np.pi**2))**(1/3)
+
+                            # Velocidad orbital (asumiendo órbita circular)
+                            # v = 2 * pi * a / T
+                            v_ms = (2 * np.pi * a_m) / periodo_seg
+
+                            # Convertir a unidades más convenientes
+                            a_au = a_m / self.AU
+                            v_kms = v_ms / 1000
+
+                            semi_ejes_mayores.append(a_au)
+                            velocidades_orbitales.append(v_kms)
+                        except (ValueError, OverflowError):
+                            semi_ejes_mayores.append(np.nan)
+                            velocidades_orbitales.append(np.nan)
+                    else:
+                        semi_ejes_mayores.append(np.nan)
+                        velocidades_orbitales.append(np.nan)
+
+                df_resultado['semi_eje_mayor_AU'] = semi_ejes_mayores
+                df_resultado['velocidad_orbital_kms'] = velocidades_orbitales
+
+                resultados_calculos['calculos_aplicados'].append('orbital_exoplanet')
+                resultados_calculos['velocidad_orbital_media_kms'] = np.nanmean(velocidades_orbitales)
+
+                print(f"   ✓ Velocidad orbital media: {np.nanmean(velocidades_orbitales):.2f} km/s")
+                print(f"   ✓ Objetos procesados: {len([v for v in velocidades_orbitales if not np.isnan(v)])}")
+            else:
+                print("   ⚠️  Falta la columna 'pl_orbper' para los cálculos de exoplanetas.")
         
         # Estadísticas generales
         print(f"\n📈 ESTADÍSTICAS DEL ANÁLISIS:")

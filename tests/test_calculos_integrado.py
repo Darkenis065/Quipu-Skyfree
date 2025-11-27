@@ -75,6 +75,18 @@ def crear_dataset_prueba_neo():
     }
     return pd.DataFrame(data)
 
+def crear_dataset_prueba_esi():
+    """Crea un dataset de prueba simulando datos de exoplanetas de NASA ESI"""
+    n = 50
+    data = {
+        'pl_name': [f'Exoplanet_{i}' for i in range(1, n+1)],
+        'hostname': [f'Star_{i}' for i in range(1, n+1)],
+        'pl_orbper': np.random.uniform(1, 1000, n),  # Período orbital en días
+        'pl_rade': np.random.uniform(0.5, 20, n),  # Radio del planeta en radios terrestres
+        'pl_bmasse': np.random.uniform(0.1, 1000, n)  # Masa del planeta en masas terrestres
+    }
+    return pd.DataFrame(data)
+
 def test_funciones_basicas():
     """Prueba las funciones básicas de cálculo"""
     separador("PRUEBAS DE FUNCIONES BÁSICAS")
@@ -138,7 +150,7 @@ def test_analisis_dataframe_sdss():
     
     # Verificar resultados
     print("\n📈 Verificando resultados...")
-    columnas_esperadas = ['distancia_Mpc', 'distancia_años_luz', 'velocidad_recesion_km_s']
+    columnas_esperadas = ['distancia_Mpc', 'distancia_años_luz', 'velocidad_recesion_km_s', 'H0_usado']
     for col in columnas_esperadas:
         assert col in df_resultado.columns, f"Columna {col} no encontrada"
         print(f"   ✓ {col}: OK")
@@ -170,7 +182,7 @@ def test_analisis_dataframe_neo():
     
     # Analizar
     print("\n🔬 Aplicando análisis orbital...")
-    df_resultado = calc.analizar_datos_csv(df=df_neo, fuente="NEO_TEST")
+    df_resultado = calc.analizar_datos_csv(df=df_neo, fuente="NEO_TEST", calculos_aplicar=['orbital'])
     
     # Verificar resultados
     print("\n📈 Verificando resultados...")
@@ -187,6 +199,41 @@ def test_analisis_dataframe_neo():
     print(f"   Período máximo: {df_resultado['periodo_orbital_años'].max():.2f} años")
     print(f"   Velocidad media: {df_resultado['velocidad_orbital_km_s'].mean():.2f} km/s")
     
+    # No retornar nada para pytest
+    assert df_resultado is not None
+
+def test_analisis_dataframe_esi():
+    """Prueba el análisis de un DataFrame de exoplanetas (ESI) en memoria"""
+    separador("PRUEBA DE ANÁLISIS - DATASET ESI (en memoria)")
+
+    calc = Calculos()
+
+    # Crear dataset de prueba
+    df_esi = crear_dataset_prueba_esi()
+
+    print(f"🪐 Dataset de prueba ESI creado:")
+    print(f"   Objetos: {len(df_esi)}")
+    print(f"   Columnas: {list(df_esi.columns)}")
+    print(f"\n   Primeras 3 filas:")
+    print(df_esi.head(3))
+
+    # Analizar
+    print("\n🔬 Aplicando análisis de exoplanetas...")
+    df_resultado = calc.analizar_datos_csv(df=df_esi, fuente="ESI_TEST", calculos_aplicar=['exoplanet'])
+
+    # Verificar resultados
+    print("\n📈 Verificando resultados...")
+    columnas_esperadas = ['semi_eje_mayor_AU', 'velocidad_orbital_kms']
+    for col in columnas_esperadas:
+        assert col in df_resultado.columns, f"Columna {col} no encontrada"
+        print(f"   ✓ {col}: OK")
+
+    print(f"\n✅ Análisis de ESI completado exitosamente")
+
+    # Mostrar estadísticas
+    print(f"\n📊 Estadísticas orbitales de exoplanetas:")
+    print(f"   Velocidad orbital media: {df_resultado['velocidad_orbital_kms'].mean():.2f} km/s")
+
     # No retornar nada para pytest
     assert df_resultado is not None
 
@@ -278,6 +325,7 @@ def main():
         # Pruebas de análisis
         test_analisis_dataframe_sdss()
         test_analisis_dataframe_neo()
+        test_analisis_dataframe_esi()
         
         # Pruebas de archivos
         test_guardar_y_leer_csv()
